@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Repositories\DepartmentRepository;
+use App\Repositories\EmployeeRepository;
+use App\Repositories\IEmployeeRepository;
 use App\Repositories\Interfaces\IDepartmentRepository;
 use App\Repositories\Interfaces\IPlantRepository;
 use App\Repositories\PlantRepository;
@@ -17,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(IPlantRepository::class, PlantRepository::class);
         $this->app->bind(IDepartmentRepository::class, DepartmentRepository::class);
-
+        $this->app->bind(IEmployeeRepository::class, EmployeeRepository::class);
     }
 
     /**
