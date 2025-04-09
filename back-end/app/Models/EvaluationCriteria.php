@@ -2,27 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EvaluationCriteria extends Model
 {
-    use HasFactory;
-
-    protected $table = 'evaluation_criteria';
     protected $primaryKey = 'criteria_id';
-    public $incrementing = false;
     protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = [
         'criteria_id',
-        'department_id',
         'criteria_name',
         'description',
         'weight',
         'status',
+        'created_at',
+        'updated_at',
     ];
 
-    public function department() {
-        return $this->belongsTo(Department::class, 'department_id', 'department_id');
+    public function criteriaForms()
+    {
+        return $this->hasMany(CriteriaForm::class, 'criteria_id', 'criteria_id');
     }
 }
