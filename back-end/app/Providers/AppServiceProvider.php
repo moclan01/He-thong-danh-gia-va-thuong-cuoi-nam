@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
+
 use App\Repositories\DepartmentRepository;
 use App\Repositories\EmployeeRepository;
-use App\Repositories\IEmployeeRepository;
 use App\Repositories\Interfaces\IDepartmentRepository;
+use App\Repositories\Interfaces\IEmployeeRepository;
 use App\Repositories\Interfaces\IPlantRepository;
 use App\Repositories\PlantRepository;
 use Illuminate\Support\ServiceProvider;

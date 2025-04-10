@@ -7,31 +7,46 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    private $allowedRoles = ['admin', 'director', 'supervisor', 'manager', 'employee'];
+
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'username' => ['required'],
-            'password' => ['required'],
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Sai tài khoản hoặc mật khẩu'], 401);
+            return response()->json(['message' => 'Thông tin đăng nhập không đúng'], 401);
         }
 
         $user = Auth::user();
 
-        // Xóa token cũ nếu muốn
-        $user->tokens()->delete();
+        // Kiểm tra xem user có role nào hợp lệ không
+        $userRoles = $user->getRoleNames()->toArray();
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $matchedRole = null;
+
+        foreach ($this->allowedRoles as $role) {
+            if (in_array($role, $userRoles)) {
+                $matchedRole = $role;
+                break;
+            }
+        }
+
+        if (!$matchedRole) {
+            return response()->json(['message' => 'Không có quyền đăng nhập hệ thống'], 403);
+        }
+
+        // Tạo token nếu hợp lệ
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Đăng nhập thành công',
-            'token' => $token,
-            'user' => [
-                'username' => $user->username,
-                'roles' => $user->getRoleNames(),
-            ]
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'role' => $matchedRole,
+            'user' => $user
         ]);
     }
 
@@ -39,6 +54,16 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Đăng xuất thành công']);
+        return response()->json([
+            'message' => 'Đăng xuất thành công',
+        ]);
+    }
+
+    public function profile(Request $request)
+    {
+        return response()->json([
+            'user' => $request->user(),
+            'roles' => $request->user()->getRoleNames()
+        ]);
     }
 }

@@ -18,7 +18,11 @@ class Employee extends Model
         'position',
         'start_date',
         'type',
-        'eligible',
+        'division',
+        'basic',
+        'grade',
+        'stafftype',
+        'manager_code',
     ];
 
     public function plant()
@@ -39,5 +43,15 @@ class Employee extends Model
     public function managedDepartments()
     {
         return $this->hasMany(Department::class, 'manage_code', 'code');
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(Employee::class, 'manager_code', 'code');
+    }
+
+    public function subordinates()
+    {
+        return $this->hasMany(Employee::class, 'manager_code', 'code');
     }
 }

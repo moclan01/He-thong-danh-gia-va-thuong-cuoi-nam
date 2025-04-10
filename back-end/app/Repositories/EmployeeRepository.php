@@ -3,17 +3,17 @@
 namespace App\Repositories;
 
 use App\Models\Employee;
+use App\Repositories\Interfaces\IEmployeeRepository;
 
-class EmployeeRepository implements IEmployeeRepository
-{
+class EmployeeRepository implements IEmployeeRepository{
     public function getAll()
     {
-        return Employee::with(['plant', 'department'])->get(); 
+        return Employee::all();
     }
 
     public function getById($id)
     {
-        return Employee::with(['plant', 'department'])->find($id);
+        return Employee::find($id);
     }
 
     public function create(array $data)
@@ -26,11 +26,10 @@ class EmployeeRepository implements IEmployeeRepository
         $employee = Employee::find($id);
 
         if (!$employee) {
-            return null;
+            return null; 
         }
 
         $employee->update($data);
-
         return $employee;
     }
 
@@ -44,5 +43,16 @@ class EmployeeRepository implements IEmployeeRepository
         }
 
         return false;
+    }
+
+    public function getEmployeesByDepartment($departmentId)
+    {
+        return Employee::where('department_id', $departmentId)->get();
+    }
+
+    // Lấy các nhân viên dưới quyền của một trưởng phòng
+    public function getSubordinates($managerCode)
+    {
+        return Employee::where('manager_code', $managerCode)->get();
     }
 }

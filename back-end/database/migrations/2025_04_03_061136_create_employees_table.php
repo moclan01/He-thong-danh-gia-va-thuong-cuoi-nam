@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('position');
             $table->date('start_date');
             $table->string('type');
-            $table->boolean('eligible')->default(false);
 
             $table->foreign('plant_id')->references('plant_id')->on('plants')->onDelete('set null');
             $table->foreign('department_id')->references('department_id')->on('departments')->onDelete('set null');

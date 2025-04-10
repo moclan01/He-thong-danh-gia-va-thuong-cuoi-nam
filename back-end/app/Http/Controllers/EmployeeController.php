@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\IEmployeeRepository;
+use App\Repositories\Interfaces\IEmployeeRepository;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -14,18 +14,17 @@ class EmployeeController extends Controller
         $this->employeeRepository = $employeeRepository;
     }
 
-    // Lấy tất cả employee
     public function index()
     {
+        // Lấy tất cả nhân viên
         $employees = $this->employeeRepository->getAll();
         return response()->json($employees);
     }
 
-    // Hiển thị thông tin employee theo ID
     public function show($id)
     {
+        // Hiển thị nhân viên theo mã
         $employee = $this->employeeRepository->getById($id);
-
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
         }
@@ -33,29 +32,41 @@ class EmployeeController extends Controller
         return response()->json($employee);
     }
 
-    // Tạo mới employee
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'code' => 'required|string|unique:employees',
-            'plant_id' => 'nullable|string',
-            'department_id' => 'nullable|string',
             'fullname' => 'required|string',
             'position' => 'required|string',
             'start_date' => 'required|date',
             'type' => 'required|string',
-            'eligible' => 'boolean',
+            'division' => 'nullable|string',
+            'basic' => 'nullable|string',
+            'grade' => 'nullable|string',
+            'stafftype' => 'nullable|string',
+            'manager_code' => 'nullable|string',
         ]);
 
-        $employee = $this->employeeRepository->create($request->all());
-
+        $employee = $this->employeeRepository->create($validatedData);
         return response()->json($employee, 201);
     }
 
-    // Cập nhật thông tin employee
     public function update(Request $request, $id)
     {
-        $employee = $this->employeeRepository->update($id, $request->all());
+        $validatedData = $request->validate([
+            'fullname' => 'nullable|string',
+            'position' => 'nullable|string',
+            'start_date' => 'nullable|date',
+            'type' => 'nullable|string',
+            'eligible' => 'nullable|boolean',
+            'division' => 'nullable|string',
+            'basic' => 'nullable|string',
+            'grade' => 'nullable|string',
+            'stafftype' => 'nullable|string',
+            'manager_code' => 'nullable|string',
+        ]);
+
+        $employee = $this->employeeRepository->update($id, $validatedData);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
@@ -64,7 +75,6 @@ class EmployeeController extends Controller
         return response()->json($employee);
     }
 
-    // Xóa employee
     public function destroy($id)
     {
         $deleted = $this->employeeRepository->delete($id);
