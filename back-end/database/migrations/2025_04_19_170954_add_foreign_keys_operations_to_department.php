@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->foreign('manager_code')->references('code')->on('employees')->onDelete('NO ACTION');
+        Schema::table('operations', function (Blueprint $table) {
+            
+            $table->foreign('department_id')
+                  ->references('department_id')
+                  ->on('departments')
+                  ->onDelete('set null'); 
         });
     }
 
@@ -21,8 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->dropForeign(['manager_code']);
+        Schema::table('operations', function (Blueprint $table) {
+            $table->dropForeign(['department_id']);
         });
     }
 };

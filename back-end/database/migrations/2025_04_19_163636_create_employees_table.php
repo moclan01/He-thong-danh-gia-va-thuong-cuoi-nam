@@ -13,15 +13,18 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->string('code')->primary();
-            $table->string('plant_id')->nullable();
-            $table->string('department_id')->nullable();
+            $table->foreignId('plant_id')->nullable();
+            $table->foreignId('department_id')->nullable();
+            $table->foreignId('position_id')->nullable();
+            $table->string('code_r')->nullable(); 
             $table->string('fullname');
-            $table->string('position');
+            $table->string('division');
+            $table->string('basic');
+            $table->string('grade');
+            $table->string('stafftype');
             $table->date('start_date');
             $table->string('type');
-
-            $table->foreign('plant_id')->references('plant_id')->on('plants')->onDelete('set null');
-            $table->foreign('department_id')->references('department_id')->on('departments')->onDelete('set null');
+            $table->timestamps();
         });
     }
 

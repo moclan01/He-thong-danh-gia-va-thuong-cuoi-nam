@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EvaluationCycleController;
 use App\Http\Controllers\PlantController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -42,3 +44,20 @@ Route::prefix('plants')->group(function () {
     Route::put('{id}', [PlantController::class, 'update']);
     Route::delete('{id}', [PlantController::class, 'destroy']);
 });
+
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index']);        
+    Route::get('/{id}', [UserController::class, 'show']);     
+    Route::post('/', [UserController::class, 'store']);       
+    Route::put('/{id}', [UserController::class, 'update']);   
+    Route::delete('/{id}', [UserController::class, 'destroy']); 
+});
+
+Route::prefix('evaluation-cycles')->group(function () {
+    Route::get('/', [EvaluationCycleController::class, 'index']);         
+    Route::get('/{id}', [EvaluationCycleController::class, 'show']);       
+    Route::post('/', [EvaluationCycleController::class, 'store']);         
+    Route::put('/{id}', [EvaluationCycleController::class, 'update']);     
+    Route::delete('/{id}', [EvaluationCycleController::class, 'destroy']); 
+});
+

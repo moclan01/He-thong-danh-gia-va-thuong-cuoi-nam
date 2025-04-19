@@ -3,34 +3,71 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Repositories\Interfaces\IUserRepository;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    protected $userRepository;
+
+    public function __construct(IUserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function index()
     {
-        $users = User::all();
-        return view('users.index', compact('users'));
+        $users = $this->userRepository->getAll();
+        return response()->json($users);
+    }
+
+    public function show($id)
+    {
+        $user = $this->userRepository->getById($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        return response()->json($user);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'username' => 'required|unique:users',
-            'employee_code' => 'nullable|unique:users',
-            'password' => 'required',
-            'status' => 'required|in:active,inactive',
-            'role' => 'required|in:admin,employee',
+        $validatedData = $request->validate([
+            'username' => 'required|string|unique:users',
+            'code' => 'required|string|exists:employees,code|unique:users,code',
+            'password' => 'required|string|min:6',
+            'status' => 'required|boolean',
+            'role' => 'required|string',
         ]);
 
-        User::create([
-            'username' => $request->username,
-            'employee_code' => $request->employee_code,
-            'password' => bcrypt($request->password), 
-            'status' => $request->status,
-            'role' => $request->role,
+        $user = $this->userRepository->create($validatedData);
+        return response()->json($user, 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'username' => 'nullable|string|unique:users,username,' . $id,
+            'password' => 'nullable|string|min:6',
+            'status' => 'nullable|boolean',
+            'role' => 'nullable|string',
         ]);
 
-        return redirect()->route('users.index')->with('success', 'Người dùng đã được tạo.');
+        $user = $this->userRepository->update($id, $validatedData);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json($user);
+    }
+
+    public function destroy($id)
+    {
+        $deleted = $this->userRepository->delete($id);
+        if (!$deleted) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json(['message' => 'User deleted successfully']);
     }
 }

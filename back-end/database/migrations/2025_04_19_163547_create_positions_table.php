@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('evaluation_criteria', function (Blueprint $table) {
-            $table->string('criteria_id')->primary();
-            $table->string('criteria_name');
-            $table->text('description')->nullable();
-            $table->float('weight');
-            $table->boolean('status');
+        Schema::create('positions', function (Blueprint $table) {
+            $table->id('position_id')->primary();
+            $table->foreignId('operation_id')->nullable();
+            $table->string('position_name');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('evaluation_criteria');
+        Schema::dropIfExists('positions');
     }
 };

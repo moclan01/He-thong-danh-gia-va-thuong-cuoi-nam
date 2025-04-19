@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->timestamps(); // Thêm các cột created_at và updated_at
+        Schema::table('departments', function (Blueprint $table) {
+            $table->foreign('manage_code')  
+                  ->references('code')      
+                  ->on('employees')         
+                  ->onDelete('set null');   
         });
     }
 
@@ -21,8 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            $table->dropTimestamps(); // Xóa các cột created_at và updated_at
+        Schema::table('departments', function (Blueprint $table) {
+            $table->dropForeign(['manage_code']);
         });
     }
 };

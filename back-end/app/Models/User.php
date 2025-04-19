@@ -13,12 +13,13 @@ class User extends Authenticatable
     
     use Notifiable, HasRoles, HasApiTokens;
 
-    protected $primaryKey = 'username';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $fillable = ['username', 'employee_code', 'password', 'status', 'role'];
-    public $timestamps = false;
+    protected $primaryKey = 'id';
+    public $incrementing = true; 
+    protected $keyType = 'int';  
 
+    protected $fillable = ['username', 'code', 'password', 'status', 'role'];
+    
+    public $timestamps = false;
     protected $hidden = [
         'password',
     ];
@@ -26,5 +27,10 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'code', 'code');
     }
 }
