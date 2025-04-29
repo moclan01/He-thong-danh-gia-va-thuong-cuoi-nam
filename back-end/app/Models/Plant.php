@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Plant extends Model
 {
     protected $primaryKey = 'plant_id';
-    protected $keyType = 'string';
-    public $incrementing = false;
+    protected $keyType = 'int';
+    public $incrementing = true;
 
     protected $fillable = [
         'plant_id',

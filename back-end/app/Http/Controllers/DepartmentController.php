@@ -34,7 +34,6 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'department_id' => 'required|string|unique:departments',
             'manage_code' => 'nullable|string',
             'department_name' => 'required|string',
         ]);

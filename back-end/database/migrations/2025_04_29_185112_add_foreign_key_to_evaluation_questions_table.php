@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('evaluation_questions', function (Blueprint $table) {
+            $table->foreign('evaluation_criteria_id')
+                ->references('evaluation_criteria_id')
+                ->on('evaluation_criteria')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('evaluation_questions', function (Blueprint $table) {
+            $table->dropForeign(['evaluation_criteria_id']);
+        });
+    }
+};

@@ -21,7 +21,6 @@ class PlantController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'plant_id' => 'required|string|unique:plants,plant_id',
             'plant_name' => 'required|string|max:255',
         ]);
 

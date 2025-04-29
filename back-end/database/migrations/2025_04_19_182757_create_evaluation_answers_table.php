@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('evaluation_answers', function (Blueprint $table) {
             $table->id('evaluation_answer_id')->primary();
             $table->string('code');
-            $table->foreignId('criteria_form_id');
+            $table->foreignId('criteria_form_id')->nullable();
             $table->integer('total_score');
             $table->timestamps();
 
