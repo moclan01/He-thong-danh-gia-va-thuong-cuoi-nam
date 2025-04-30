@@ -6,19 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class EvaluationCycle extends Model
 {
-    protected $primaryKey = 'cycles_id';
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    protected $fillable = [
-        'cycles_id',
-        'department_id',
-        'start_date',
-        'end_date',
-        'status',
-        'created_at',
-        'updated_at',
-    ];
+    protected $primaryKey = 'evaluation_cycle_id';
+    protected $keyType = 'int';
+    public $incrementing = true;
+    protected $fillable = ['department_id', 'start_date', 'end_date', 'status'];
 
     public function department()
     {
@@ -27,6 +18,6 @@ class EvaluationCycle extends Model
 
     public function criteriaForms()
     {
-        return $this->hasMany(CriteriaForm::class, 'cycles_id', 'cycles_id');
+        return $this->hasMany(CriteriaForm::class, 'evaluation_cycle_id', 'evaluation_cycle_id');
     }
 }

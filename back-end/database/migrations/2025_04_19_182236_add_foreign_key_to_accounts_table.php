@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('accounts', function (Blueprint $table) {
             $table->foreign('code')  
                   ->references('code')      
                   ->on('employees')         
@@ -24,7 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('accounts', function (Blueprint $table) {
             $table->dropForeign(['code']);
         });
     }

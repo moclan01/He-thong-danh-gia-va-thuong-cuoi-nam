@@ -16,4 +16,9 @@ class Position extends Model
     {
         return $this->belongsTo(Operation::class, 'operation_id', 'operation_id');
     }
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'position_id', 'position_id');
+    }
 }

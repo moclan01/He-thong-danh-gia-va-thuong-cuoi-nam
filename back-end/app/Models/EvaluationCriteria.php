@@ -6,22 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class EvaluationCriteria extends Model
 {
-    protected $primaryKey = 'criteria_id';
-    protected $keyType = 'string';
-    public $incrementing = false;
+    protected $primaryKey = 'evaluation_criteria_id';
+    protected $keyType = 'int';
+    public $incrementing = true;
+    protected $fillable = ['criteria_form_id', 'criteria_name'];
 
-    protected $fillable = [
-        'criteria_id',
-        'criteria_name',
-        'description',
-        'weight',
-        'status',
-        'created_at',
-        'updated_at',
-    ];
-
-    public function criteriaForms()
+    public function criteriaForm()
     {
-        return $this->hasMany(CriteriaForm::class, 'criteria_id', 'criteria_id');
+        return $this->belongsTo(CriteriaForm::class, 'criteria_form_id', 'criteria_form_id');
+    }
+
+    public function evaluationQuestions()
+    {
+        return $this->hasMany(EvaluationQuestion::class, 'evaluation_criteria_id', 'evaluation_criteria_id');
     }
 }

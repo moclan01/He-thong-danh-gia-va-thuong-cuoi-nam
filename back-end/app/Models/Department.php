@@ -11,7 +11,6 @@ class Department extends Model
     public $incrementing = true;
 
     protected $fillable = [
-        'department_id',
         'manage_code', 
         'department_name',
     ];
@@ -24,5 +23,15 @@ class Department extends Model
     public function manager()
     {
         return $this->belongsTo(Employee::class, 'manage_code', 'code');
+    }
+
+    public function operations()
+    {
+        return $this->hasMany(Operation::class, 'department_id', 'department_id');
+    }
+
+    public function evaluationCycles()
+    {
+        return $this->hasMany(EvaluationCycle::class, 'department_id', 'department_id');
     }
 }

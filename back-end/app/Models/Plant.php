@@ -11,7 +11,6 @@ class Plant extends Model
     public $incrementing = true;
 
     protected $fillable = [
-        'plant_id',
         'plant_name',
     ];
 
