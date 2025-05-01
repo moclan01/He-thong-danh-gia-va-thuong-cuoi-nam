@@ -50,7 +50,6 @@ class EmployeeRepository implements IEmployeeRepository{
         return Employee::where('department_id', $departmentId)->get();
     }
 
-    // Lấy các nhân viên dưới quyền của một trưởng phòng
     public function getSubordinates($managerCode)
     {
         return Employee::where('manager_code', $managerCode)->get();

@@ -4,12 +4,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EvaluationCycleController;
+use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlantController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\PositionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
-// Đảm bảo không có route nào không cần xác thực trong nhóm này (ví dụ login)
 Route::post('/login', [AuthController::class,'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -18,7 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-// Department routes
 Route::prefix('departments')->group(function () {
     Route::get('/', [DepartmentController::class, 'index']);   
     Route::get('/{id}', [DepartmentController::class, 'show']);      
@@ -27,7 +26,6 @@ Route::prefix('departments')->group(function () {
     Route::delete('/{id}', [DepartmentController::class, 'destroy']); 
 });
 
-// Employee routes
 Route::prefix('employees')->group(function () {
     Route::get('/', [EmployeeController::class, 'index']);
     Route::get('{id}', [EmployeeController::class, 'show']);
@@ -36,7 +34,6 @@ Route::prefix('employees')->group(function () {
     Route::delete('{id}', [EmployeeController::class, 'destroy']);
 });
 
-// Plant routes
 Route::prefix('plants')->group(function () {
     Route::get('/', [PlantController::class, 'index']);
     Route::get('{id}', [PlantController::class, 'show']);
@@ -45,19 +42,27 @@ Route::prefix('plants')->group(function () {
     Route::delete('{id}', [PlantController::class, 'destroy']);
 });
 
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index']);        
-    Route::get('/{id}', [UserController::class, 'show']);     
-    Route::post('/', [UserController::class, 'store']);       
-    Route::put('/{id}', [UserController::class, 'update']);   
-    Route::delete('/{id}', [UserController::class, 'destroy']); 
+
+Route::prefix('operations')->group(function () {
+    Route::get('/', [OperationController::class, 'index']);
+    Route::post('/', [OperationController::class, 'store']);
+    Route::get('/{id}', [OperationController::class, 'show']);
+    Route::put('/{id}', [OperationController::class, 'update']);
+    Route::delete('/{id}', [OperationController::class, 'destroy']);
+});
+
+Route::prefix('positions')->group(function () {
+    Route::get('/', [PositionController::class, 'index']);
+    Route::post('/', [PositionController::class, 'store']);
+    Route::get('/{id}', [PositionController::class, 'show']);
+    Route::put('/{id}', [PositionController::class, 'update']);
+    Route::delete('/{id}', [PositionController::class, 'destroy']);
 });
 
 Route::prefix('evaluation-cycles')->group(function () {
-    Route::get('/', [EvaluationCycleController::class, 'index']);         
-    Route::get('/{id}', [EvaluationCycleController::class, 'show']);       
-    Route::post('/', [EvaluationCycleController::class, 'store']);         
-    Route::put('/{id}', [EvaluationCycleController::class, 'update']);     
-    Route::delete('/{id}', [EvaluationCycleController::class, 'destroy']); 
+    Route::get('/', [EvaluationCycleController::class, 'index']);
+    Route::post('/', [EvaluationCycleController::class, 'store']);
+    Route::get('/{id}', [EvaluationCycleController::class, 'show']);
+    Route::put('/{id}', [EvaluationCycleController::class, 'update']);
+    Route::delete('/{id}', [EvaluationCycleController::class, 'destroy']);
 });
-

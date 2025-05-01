@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 
+use App\Repositories\AccountRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\EmployeeRepository;
 use App\Repositories\EvaluationCycleRepository;
+use App\Repositories\Interfaces\IAccountRepository;
 use App\Repositories\Interfaces\IDepartmentRepository;
 use App\Repositories\Interfaces\IEmployeeRepository;
 use App\Repositories\Interfaces\IEvaluationCycleRepository;
@@ -32,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPositionRepository::class, PositionRepository::class);
         $this->app->bind(IEmployeeRepository::class, EmployeeRepository::class);
         $this->app->bind(IEvaluationCycleRepository::class, EvaluationCycleRepository::class);
+        $this->app->bind(IAccountRepository::class, AccountRepository::class);
     }
 
     /**

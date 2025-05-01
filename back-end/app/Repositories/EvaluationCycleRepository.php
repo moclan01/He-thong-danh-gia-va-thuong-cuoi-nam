@@ -8,12 +8,12 @@ use App\Repositories\Interfaces\IEvaluationCycleRepository;
 class EvaluationCycleRepository implements IEvaluationCycleRepository{
     public function getAll()
     {
-        return EvaluationCycle::with('department')->get();
+        return EvaluationCycle::with(['department', 'criteriaForms'])->get();
     }
 
     public function getById($id)
     {
-        return EvaluationCycle::with('department', 'criteriaForms')->find($id);
+        return EvaluationCycle::with(['department', 'criteriaForms'])->find($id);
     }
 
     public function create(array $data)
@@ -23,22 +23,26 @@ class EvaluationCycleRepository implements IEvaluationCycleRepository{
 
     public function update($id, array $data)
     {
-        $cycle = EvaluationCycle::find($id);
-        if ($cycle) {
-            $cycle->update($data);
-            return $cycle;
+        $evaluationCycle = EvaluationCycle::find($id);
+
+        if (!$evaluationCycle) {
+            return null;
         }
-        return null;
+
+        $evaluationCycle->update($data);
+
+        return $evaluationCycle;
     }
 
     public function delete($id)
     {
-        $cycle = EvaluationCycle::find($id);
-        if ($cycle) {
-            $cycle->delete();
+        $evaluationCycle = EvaluationCycle::find($id);
+
+        if ($evaluationCycle) {
+            $evaluationCycle->delete();
             return true;
         }
+
         return false;
     }
-
 }
