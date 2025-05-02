@@ -4,8 +4,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CriteriaFormController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EvaluationAnswerController;
 use App\Http\Controllers\EvaluationCriteriaController;
 use App\Http\Controllers\EvaluationCycleController;
+use App\Http\Controllers\EvaluationQuestionController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\PositionController;
@@ -84,4 +86,22 @@ Route::prefix('evaluation-criteria')->group(function () {
     Route::get('/{id}', [EvaluationCriteriaController::class, 'show']);
     Route::put('/{id}', [EvaluationCriteriaController::class, 'update']);
     Route::delete('/{id}', [EvaluationCriteriaController::class, 'destroy']);
+});
+
+Route::prefix('evaluation-questions')->group(function () {
+    Route::get('/', [EvaluationQuestionController::class, 'index']);
+    Route::post('/', [EvaluationQuestionController::class, 'store']);
+    Route::get('/{id}', [EvaluationQuestionController::class, 'show']);
+    Route::put('/{id}', [EvaluationQuestionController::class, 'update']);
+    Route::delete('/{id}', [EvaluationQuestionController::class, 'destroy']);
+    Route::get('/{id}/details', [EvaluationQuestionController::class, 'showWithDetails']);
+});
+
+Route::prefix('evaluation-answers')->group(function () {
+    Route::get('/', [EvaluationAnswerController::class, 'index']);
+    Route::get('/{id}', [EvaluationAnswerController::class, 'show']);
+    Route::post('/', [EvaluationAnswerController::class, 'store']);
+    Route::put('/{id}', [EvaluationAnswerController::class, 'update']);
+    Route::delete('/{id}', [EvaluationAnswerController::class, 'destroy']);
+    Route::get('/{id}/details', [EvaluationAnswerController::class, 'showWithDetails']);
 });
