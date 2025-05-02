@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CriteriaFormController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EvaluationCriteriaController;
 use App\Http\Controllers\EvaluationCycleController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlantController;
@@ -65,4 +67,21 @@ Route::prefix('evaluation-cycles')->group(function () {
     Route::get('/{id}', [EvaluationCycleController::class, 'show']);
     Route::put('/{id}', [EvaluationCycleController::class, 'update']);
     Route::delete('/{id}', [EvaluationCycleController::class, 'destroy']);
+});
+
+
+Route::prefix('criteria-forms')->group(function () {
+    Route::get('/', [CriteriaFormController::class, 'index']);          
+    Route::post('/', [CriteriaFormController::class, 'store']);         
+    Route::get('/{id}', [CriteriaFormController::class, 'show']);       
+    Route::put('/{id}', [CriteriaFormController::class, 'update']);     
+    Route::delete('/{id}', [CriteriaFormController::class, 'destroy']); 
+});
+
+Route::prefix('evaluation-criteria')->group(function () {
+    Route::get('/', [EvaluationCriteriaController::class, 'index']);
+    Route::post('/', [EvaluationCriteriaController::class, 'store']);
+    Route::get('/{id}', [EvaluationCriteriaController::class, 'show']);
+    Route::put('/{id}', [EvaluationCriteriaController::class, 'update']);
+    Route::delete('/{id}', [EvaluationCriteriaController::class, 'destroy']);
 });
