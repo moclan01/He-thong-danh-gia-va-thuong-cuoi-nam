@@ -14,12 +14,10 @@ use App\Http\Controllers\PositionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
-Route::post('/login', [AuthController::class,'login']);
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/profile', [AuthController::class, 'profile']);
-
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::middleware(['auth:sanctum', 'role:employee'])->group(function () {
+    Route::get('/employee/me', [EmployeeController::class, 'getProfile']);
 });
 
 Route::prefix('departments')->group(function () {

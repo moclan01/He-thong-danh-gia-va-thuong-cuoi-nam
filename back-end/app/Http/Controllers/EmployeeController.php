@@ -88,4 +88,31 @@ class EmployeeController extends Controller
 
         return response()->json(['message' => 'Employee deleted successfully']);
     }
+
+    public function getProfile(Request $request)
+    {
+        $account = $request->user();
+
+        if (!$account) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+
+        $employee = $this->employeeRepository->getByCode($account->code);
+
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
+
+        return response()->json([
+            'account' => [
+                'id' => $account->id,
+                'username' => $account->username,
+                'role' => $account->role,
+                'code' => $account->code,
+                'status' => $account->status,
+            ],
+            'employee' => $employee,
+        ], 200);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Account;
+use App\Models\Employee;
 use App\Repositories\Interfaces\IAccountRepository;
 
 class AccountRepository implements IAccountRepository{
@@ -44,5 +45,12 @@ class AccountRepository implements IAccountRepository{
         }
 
         return false;
+    }
+
+    public function getByCode($code)
+    {
+        return Employee::with(['plant', 'department', 'position'])
+            ->where('code', $code)
+            ->first();
     }
 }

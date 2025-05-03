@@ -3,13 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 
 class Account extends Model
 {
+    use HasApiTokens;
     protected $primaryKey = 'id';
     protected $keyType = 'int';
     public $incrementing = true;
     protected $fillable = ['code', 'username', 'password', 'role', 'status'];
+
+    protected $hidden = ['password'];
 
     public function employee()
     {

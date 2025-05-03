@@ -16,54 +16,34 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Thông tin đăng nhập không đúng'], 401);
+        // Kiểm tra thông tin đăng nhập
+        if (!Auth::guard('api')->attempt($credentials)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $user = Auth::user();
+        $account = Auth::guard('api')->user();
 
-        // Kiểm tra xem user có role nào hợp lệ không
-        $userRoles = $user->getRoleNames()->toArray();
-
-        $matchedRole = null;
-
-        foreach ($this->allowedRoles as $role) {
-            if (in_array($role, $userRoles)) {
-                $matchedRole = $role;
-                break;
-            }
+        if ($account->status !== 'active') {
+            return response()->json(['message' => 'Account is not active'], 403);
         }
 
-        if (!$matchedRole) {
-            return response()->json(['message' => 'Không có quyền đăng nhập hệ thống'], 403);
-        }
-
-        // Tạo token nếu hợp lệ
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $account->createToken('authToken')->plainTextToken;
 
         return response()->json([
-            'message' => 'Đăng nhập thành công',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'role' => $matchedRole,
-            'user' => $user
-        ]);
+            'token' => $token,
+            'user' => [
+                'id' => $account->id,
+                'username' => $account->username,
+                'role' => $account->role,
+                'code' => $account->code,
+            ],
+        ], 200);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-
-        return response()->json([
-            'message' => 'Đăng xuất thành công',
-        ]);
+        return response()->json(['message' => 'Logged out successfully'], 200);
     }
 
-    public function profile(Request $request)
-    {
-        return response()->json([
-            'user' => $request->user(),
-            'roles' => $request->user()->getRoleNames()
-        ]);
-    }
 }
