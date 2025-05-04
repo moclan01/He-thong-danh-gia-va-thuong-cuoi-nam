@@ -13,6 +13,7 @@ class Department extends Model
     protected $fillable = [
         'manage_code', 
         'department_name',
+        'vp_group'
     ];
 
     public function employees()

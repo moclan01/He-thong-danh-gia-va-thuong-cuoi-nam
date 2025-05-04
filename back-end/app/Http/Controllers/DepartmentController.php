@@ -36,6 +36,7 @@ class DepartmentController extends Controller
         $request->validate([
             'manage_code' => 'nullable|string',
             'department_name' => 'required|string',
+            'vp_group' => 'required|string',
         ]);
 
         $department = $this->departmentRepository->create($request->all());

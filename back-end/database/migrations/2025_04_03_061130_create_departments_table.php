@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('department_id')->primary();
             $table->string('manage_code')->nullable();
             $table->string('department_name');
+            $table->string('vp_group');
             $table->timestamps();
         });
     }
