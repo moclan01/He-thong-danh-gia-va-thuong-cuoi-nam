@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    private $allowedRoles = ['admin', 'director', 'supervisor', 'manager', 'employee'];
 
     public function login(Request $request)
     {
