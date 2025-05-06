@@ -10,8 +10,18 @@ function App() {
     null,
     React.createElement(
       'div',
-      { className: 'min-vh-100 bg-light' },
-      React.createElement(AppRoutes)
+      null,
+      React.createElement(Header),
+      React.createElement(
+        'div',
+        { className: 'd-flex' },
+        React.createElement(Sidebar),
+        React.createElement(
+          'div',
+          { className: 'flex-grow-1 p-4' },
+          React.createElement(AppRoutes)
+        )
+      )
     )
   );
 }
