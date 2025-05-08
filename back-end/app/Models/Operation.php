@@ -12,6 +12,10 @@ class Operation extends Model
 
     protected $fillable = ['department_id', 'operation_name'];
 
+    protected $casts = [
+        'department_id' => 'integer',
+    ];
+    
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'department_id');

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CriteriaFormController;
 use App\Http\Controllers\DepartmentController;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/logout', [AuthController::class, 'logout']);
 Route::middleware(['auth:sanctum', 'role:employee'])->group(function () {
     Route::get('/employee/me', [EmployeeController::class, 'getProfile']);
 });
@@ -34,6 +35,14 @@ Route::prefix('employees')->group(function () {
     Route::post('/', [EmployeeController::class, 'store']);
     Route::put('{id}', [EmployeeController::class, 'update']);
     Route::delete('{id}', [EmployeeController::class, 'destroy']);
+});
+
+Route::prefix('accounts')->group(function () {
+    Route::get('/', [AccountController::class, 'index']);
+    Route::post('/', [AccountController::class, 'store']);
+    Route::get('/{id}', [AccountController::class, 'show']);
+    Route::put('/{id}', [AccountController::class, 'update']);
+    Route::delete('/{id}', [AccountController::class, 'destroy']);
 });
 
 Route::prefix('plants')->group(function () {

@@ -2,47 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use Hash;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
-{
-
+{ 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Kiểm tra thông tin đăng nhập
-        if (!Auth::guard('api')->attempt($credentials)) {
+        $account = Account::where('username', $request->username)->first();
+
+        if (!$account || !Hash::check($request->password, $account->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $account = Auth::guard('api')->user();
-
-        if ($account->status !== 'active') {
-            return response()->json(['message' => 'Account is not active'], 403);
+        if (!$account->token) {
+            $account->token = Str::random(60);
+            $account->save();
         }
 
-        $token = $account->createToken('authToken')->plainTextToken;
-
         return response()->json([
-            'token' => $token,
-            'user' => [
-                'id' => $account->id,
-                'username' => $account->username,
-                'role' => $account->role,
-                'code' => $account->code,
-            ],
-        ], 200);
+            'message' => 'Login successful',
+            'token' => $account->token,
+            'user' => $account,
+        ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Logged out successfully'], 200);
-    }
+        $token = $request->bearerToken();
 
+        if (!$token) {
+            return response()->json(['message' => 'Token is required'], 401);
+        }
+
+        $account = Account::where('token', $token)->first();
+
+        if (!$account) {
+            return response()->json(['message' => 'Invalid token'], 401);
+        }
+
+        if (!$account->token) {
+            $account->token = Str::random(60);
+            $account->save();
+        }
+
+        $account->token = null;
+        $account->save();
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
 }

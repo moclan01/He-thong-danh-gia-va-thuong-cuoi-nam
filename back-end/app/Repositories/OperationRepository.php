@@ -8,12 +8,12 @@ use App\Repositories\Interfaces\IOperationRepository;
 class OperationRepository implements IOperationRepository{
     public function getAll()
     {
-        return Operation::all();
+        return Operation::with('department')->get();
     }
 
     public function getById($id)
     {
-        return Operation::find($id);
+        return Operation::with('department')->find($id);
     }
 
     public function create(array $data)
@@ -26,7 +26,8 @@ class OperationRepository implements IOperationRepository{
         $operation = Operation::find($id);
         if ($operation) {
             $operation->update($data);
-            return $operation;
+            // Load lại để có quan hệ department sau khi update
+            return Operation::with('department')->find($id);
         }
         return null;
     }

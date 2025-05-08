@@ -12,6 +12,10 @@ class Position extends Model
 
     protected $fillable = ['operation_id', 'position_name'];
 
+    protected $casts = [
+        'operation_id' => 'integer',
+    ];
+
     public function operation()
     {
         return $this->belongsTo(Operation::class, 'operation_id', 'operation_id');

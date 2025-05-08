@@ -11,7 +11,7 @@ class Account extends Model
     protected $primaryKey = 'id';
     protected $keyType = 'int';
     public $incrementing = true;
-    protected $fillable = ['code', 'username', 'password', 'role', 'status'];
+    protected $fillable = ['code', 'username', 'password', 'role', 'status', 'token'];
 
     protected $hidden = ['password'];
 

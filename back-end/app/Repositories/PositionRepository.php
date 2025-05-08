@@ -5,15 +5,16 @@ namespace App\Repositories;
 use App\Models\Position;
 use App\Repositories\Interfaces\IPositionRepository;
 
-class PositionRepository implements IPositionRepository{
+class PositionRepository implements IPositionRepository
+{
     public function getAll()
     {
-        return Position::all();
+        return Position::with('operation')->get();
     }
 
     public function getById($id)
     {
-        return Position::find($id);
+        return Position::with('operation')->find($id);
     }
 
     public function create(array $data)
@@ -26,7 +27,7 @@ class PositionRepository implements IPositionRepository{
         $position = Position::find($id);
         if ($position) {
             $position->update($data);
-            return $position;
+            return Position::with('operation')->find($id); 
         }
         return null;
     }

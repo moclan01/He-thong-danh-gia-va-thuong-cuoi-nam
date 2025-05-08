@@ -41,7 +41,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IAccountRepository::class, AccountRepository::class);
         $this->app->bind(ICriteriaFormRepository::class, CriteriaFormRepository::class);
         $this->app->bind(IEvaluationCriteriaRepository::class, EvaluationCriteriaRepository::class);
-        
     }
 
     /**
