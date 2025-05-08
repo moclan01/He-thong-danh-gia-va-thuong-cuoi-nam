@@ -26,7 +26,6 @@ class OperationRepository implements IOperationRepository{
         $operation = Operation::find($id);
         if ($operation) {
             $operation->update($data);
-            // Load lại để có quan hệ department sau khi update
             return Operation::with('department')->find($id);
         }
         return null;

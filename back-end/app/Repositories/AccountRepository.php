@@ -6,7 +6,8 @@ use App\Models\Account;
 use App\Models\Employee;
 use App\Repositories\Interfaces\IAccountRepository;
 
-class AccountRepository implements IAccountRepository{
+class AccountRepository implements IAccountRepository
+{
     public function getAll()
     {
         return Account::with('employee')->get();
@@ -25,14 +26,11 @@ class AccountRepository implements IAccountRepository{
     public function update($id, array $data)
     {
         $account = Account::find($id);
-
-        if (!$account) {
-            return null;
+        if ($account) {
+            $account->update($data);
+            return Account::with('employee')->find($id);
         }
-
-        $account->update($data);
-
-        return $account;
+        return null;
     }
 
     public function delete($id)

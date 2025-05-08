@@ -9,12 +9,12 @@ class PlantRepository implements IPlantRepository
 {
     public function getAll()
     {
-        return Plant::all();
+        return Plant::with('employees')->get();
     }
 
     public function getById($id)
     {
-        return Plant::find($id);
+        return Plant::with('employees')->find($id);
     }
 
     public function create(array $data)
@@ -27,7 +27,7 @@ class PlantRepository implements IPlantRepository
         $plant = Plant::find($id);
         if ($plant) {
             $plant->update($data);
-            return $plant;
+            return Plant::with('employees')->find($id);
         }
         return null;
     }

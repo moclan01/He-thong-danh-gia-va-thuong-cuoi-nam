@@ -13,7 +13,7 @@ class EvaluationAnswerDetailRepository implements IEvaluationAnswerDetailReposit
 
     public function getById($id)
     {
-        return EvaluationAnswerDetail::with(['evaluationQuestion', 'evaluationAnswer'])->find($id);
+        return EvaluationAnswerDetail::with(['evaluationQuestion', 'evaluationAnswer'])->findOrFail($id);
     }
 
     public function create(array $data)
@@ -23,15 +23,12 @@ class EvaluationAnswerDetailRepository implements IEvaluationAnswerDetailReposit
 
     public function update($id, array $data)
     {
-        $evaluationAnswerDetail = EvaluationAnswerDetail::find($id);
-
-        if (!$evaluationAnswerDetail) {
-            return null;
+        $detail = EvaluationAnswerDetail::find($id);
+        if ($detail) {
+            $detail->update($data);
+            return EvaluationAnswerDetail::with(['evaluationQuestion', 'evaluationAnswer'])->find($id);
         }
-
-        $evaluationAnswerDetail->update($data);
-
-        return $evaluationAnswerDetail;
+        return null;
     }
 
     public function delete($id)

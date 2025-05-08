@@ -13,7 +13,7 @@ class EvaluationCycleRepository implements IEvaluationCycleRepository{
 
     public function getById($id)
     {
-        return EvaluationCycle::with(['department', 'criteriaForms'])->find($id);
+        return EvaluationCycle::with(['department', 'criteriaForms'])->findOrFail($id);
     }
 
     public function create(array $data)
@@ -23,15 +23,12 @@ class EvaluationCycleRepository implements IEvaluationCycleRepository{
 
     public function update($id, array $data)
     {
-        $evaluationCycle = EvaluationCycle::find($id);
-
-        if (!$evaluationCycle) {
-            return null;
+        $cycle = EvaluationCycle::find($id);
+        if ($cycle) {
+            $cycle->update($data);
+            return EvaluationCycle::with(['department', 'criteriaForms'])->find($id);
         }
-
-        $evaluationCycle->update($data);
-
-        return $evaluationCycle;
+        return null;
     }
 
     public function delete($id)

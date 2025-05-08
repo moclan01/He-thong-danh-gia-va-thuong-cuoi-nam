@@ -8,12 +8,13 @@ use App\Repositories\Interfaces\IEvaluationAnswerRepository;
 class EvaluationAnswerRepository implements IEvaluationAnswerRepository{
     public function getAll()
     {
-        return EvaluationAnswer::with(['employee', 'criteriaForm'])->get();
+        return EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])->get();
+    
     }
 
     public function getById($id)
     {
-        return EvaluationAnswer::with(['employee', 'criteriaForm'])->find($id);
+        return EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])->findOrFail($id);
     }
 
     public function create(array $data)
@@ -23,15 +24,12 @@ class EvaluationAnswerRepository implements IEvaluationAnswerRepository{
 
     public function update($id, array $data)
     {
-        $evaluationAnswer = EvaluationAnswer::find($id);
-
-        if (!$evaluationAnswer) {
-            return null;
+        $answer = EvaluationAnswer::find($id);
+        if ($answer) {
+            $answer->update($data);
+            return EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])->find($id);
         }
-
-        $evaluationAnswer->update($data);
-
-        return $evaluationAnswer;
+        return null;
     }
 
     public function delete($id)
@@ -44,5 +42,16 @@ class EvaluationAnswerRepository implements IEvaluationAnswerRepository{
         }
 
         return false;
+    }
+
+    public function recalculateTotalScore($id)
+    {
+        $answer = EvaluationAnswer::with('evaluationAnswerDetails')->find($id);
+        if (!$answer) return null;
+
+        $total = $answer->evaluationAnswerDetails->sum('score');
+        $answer->update(['total_score' => $total]);
+
+        return $answer;
     }
 }

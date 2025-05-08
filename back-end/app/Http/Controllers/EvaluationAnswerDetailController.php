@@ -49,7 +49,7 @@ class EvaluationAnswerDetailController extends Controller
         $validated = $request->validate([
             'evaluation_question_id' => 'sometimes|integer|exists:evaluation_questions,evaluation_question_id',
             'evaluation_answer_id' => 'sometimes|integer|exists:evaluation_answers,evaluation_answer_id',
-            'score' => 'required|integer|min:0|max:100',
+            'score' => 'required|integer|min:0|max:120',
         ]);
 
         $evaluationAnswerDetail = $this->evaluationAnswerDetailRepository->update($id, $validated);

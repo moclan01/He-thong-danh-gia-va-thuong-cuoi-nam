@@ -8,12 +8,12 @@ use App\Repositories\Interfaces\IEmployeeRepository;
 class EmployeeRepository implements IEmployeeRepository{
     public function getAll()
     {
-        return Employee::all();
+        return Employee::with(['account', 'plant', 'department', 'position', 'manager'])->get();
     }
 
-    public function getById($id)
+    public function getById($code)
     {
-        return Employee::find($id);
+        return Employee::with(['account', 'plant', 'department', 'position', 'manager'])->where('code', $code)->first();
     }
 
     public function create(array $data)
@@ -21,27 +21,23 @@ class EmployeeRepository implements IEmployeeRepository{
         return Employee::create($data);
     }
 
-    public function update($id, array $data)
+    public function update($code, array $data)
     {
-        $employee = Employee::find($id);
-
-        if (!$employee) {
-            return null; 
+        $employee = Employee::where('code', $code)->first();
+        if ($employee) {
+            $employee->update($data);
+            return Employee::with(['account', 'plant', 'department', 'position', 'manager'])->where('code', $code)->first();
         }
-
-        $employee->update($data);
-        return $employee;
+        return null;
     }
 
-    public function delete($id)
+    public function delete($code)
     {
-        $employee = Employee::find($id);
-
+        $employee = Employee::where('code', $code)->first();
         if ($employee) {
             $employee->delete();
             return true;
         }
-
         return false;
     }
 

@@ -21,6 +21,10 @@ Route::middleware(['auth:sanctum', 'role:employee'])->group(function () {
     Route::get('/employee/me', [EmployeeController::class, 'getProfile']);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('employee/profile', [EmployeeController::class, 'getProfile']);
+});
+
 Route::prefix('departments')->group(function () {
     Route::get('/', [DepartmentController::class, 'index']);   
     Route::get('/{id}', [DepartmentController::class, 'show']);      
