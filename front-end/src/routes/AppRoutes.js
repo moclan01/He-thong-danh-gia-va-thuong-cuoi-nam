@@ -1,26 +1,24 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import PlantList from '../pages/plant/PlantList';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from '../pages/Login';
+import Home from '../pages/Home';
+import Profile from '../pages/Profile';
+import ChangePassword from '../pages/ChangePassword';
+import SelfAssessment from '../pages/evaluation/SelfAssessment';
 
-const AppRoutes = () => {
-  const user = getCurrentUser();
-  return React.createElement(
-    Routes,
-    null,
-    React.createElement(Route, {
-      path: '/login',
-      element: user ? React.createElement(() => { window.location.href = '/'; return null; }) : React.createElement(Login),
-    }),
-    React.createElement(Route, {
-      path: '/',
-      element: user ? React.createElement(Home) : React.createElement(() => { window.location.href = '/login'; return null; }),
-    }),
-    React.createElement(Route, {
-      path: '/plants',
-      element: user ? React.createElement(PlantList) : React.createElement(() => { window.location.href = '/login'; return null; }),
-    }),
-    React.createElement(Route, { path: '*', element: React.createElement('div', null, '404 Not Found') })
+export default function AppRoute() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path='/change-password' element={<ChangePassword />} />
+        <Route path="/self-assessment" element={<SelfAssessment />} />
+        {/* <Route path="/evaluation-results" element={<EvaluationResults />} />
+        <Route path="/evaluation-history" element={<EvaluationHistory />} /> */}
+        {/* Thêm các route khác ở đây */}
+      </Routes>
+    </Router>
   );
-};
-
-export default AppRoutes;
+}

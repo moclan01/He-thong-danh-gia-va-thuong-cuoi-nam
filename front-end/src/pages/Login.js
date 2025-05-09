@@ -1,95 +1,59 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import Button from '../components/Button';
 import { login } from '../services/authService';
 
+function Login() {
 
-const Login = () => {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
-    const navigate = useNavigate();
-  
-    const handleChange = (e) => {
-      setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    };
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        await login(credentials);
-        toast.success('Login successful!');
-        navigate('/');
-      } catch (error) {
-        toast.error(error.message || 'Login failed!');
-      }
-    };
-  
-    return React.createElement(
-      'div',
-      { className: 'container mt-5' },
-      React.createElement(
-        'div',
-        { className: 'row justify-content-center' },
-        React.createElement(
-          'div',
-          { className: 'col-md-4' },
-          React.createElement(
-            'div',
-            { className: 'card p-4' },
-            React.createElement('h2', { className: 'text-center mb-4' }, 'Login'),
-            React.createElement(
-              'form',
-              { onSubmit: handleSubmit },
-              React.createElement(
-                'div',
-                { className: 'mb-3' },
-                React.createElement(
-                  'label',
-                  { htmlFor: 'username', className: 'form-label' },
-                  'Username'
-                ),
-                React.createElement('input', {
-                  type: 'text',
-                  name: 'username',
-                  id: 'username',
-                  value: credentials.username,
-                  onChange: handleChange,
-                  className: 'form-control',
-                  required: true,
-                })
-              ),
-              React.createElement(
-                'div',
-                { className: 'mb-3' },
-                React.createElement(
-                  'label',
-                  { htmlFor: 'password', className: 'form-label' },
-                  'Password'
-                ),
-                React.createElement('input', {
-                  type: 'password',
-                  name: 'password',
-                  id: 'password',
-                  value: credentials.password,
-                  onChange: handleChange,
-                  className: 'form-control',
-                  required: true,
-                })
-              ),
-              React.createElement(
-                'div',
-                { className: 'd-grid' },
-                React.createElement(Button, {
-                  type: 'submit',
-                  className: 'btn btn-primary',
-                }, 'Login')
-              )
-            )
-          )
-        )
-      ),
-      React.createElement(ToastContainer)
-    );
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
-  
-  export default Login;
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      const data = await login(form.username, form.password);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      navigate('/home');
+    } catch (err) {
+      console.error('Lỗi đăng nhập:', err);
+      setError('Sai tên đăng nhập hoặc mật khẩu');
+    }
+  };
+  return (
+    <div className="container mt-5" style={{ maxWidth: '400px' }}>
+      <h2 className="mb-4">Đăng nhập</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label">Tên đăng nhập</label>
+          <input
+            type="text"
+            name="username"
+            className="form-control"
+            value={form.username}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Mật khẩu</label>
+          <input
+            type="password"
+            name="password"
+            className="form-control"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary w-100">Đăng nhập</button>
+      </form>
+    </div>
+  );
+}
+
+export default Login;
