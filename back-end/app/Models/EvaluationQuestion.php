@@ -11,6 +11,10 @@ class EvaluationQuestion extends Model
     public $incrementing = true;
     protected $fillable = ['evaluation_criteria_id', 'question_name', 'max_score'];
 
+    protected $casts = [
+        'evaluation_criteria_id' => 'integer',
+    ];
+
     public function evaluationCriteria()
     {
         return $this->belongsTo(EvaluationCriteria::class, 'evaluation_criteria_id', 'evaluation_criteria_id');

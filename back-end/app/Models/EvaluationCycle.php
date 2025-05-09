@@ -11,6 +11,10 @@ class EvaluationCycle extends Model
     public $incrementing = true;
     protected $fillable = ['department_id', 'start_date', 'end_date', 'status'];
 
+    protected $casts = [
+        'department_id' => 'integer',
+    ];
+    
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'department_id');

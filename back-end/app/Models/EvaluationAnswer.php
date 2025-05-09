@@ -11,6 +11,10 @@ class EvaluationAnswer extends Model
     public $incrementing = true;
     protected $fillable = ['code', 'criteria_form_id', 'total_score'];
 
+    protected $casts = [
+        'criteria_form_id' => 'integer',
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'code', 'code');

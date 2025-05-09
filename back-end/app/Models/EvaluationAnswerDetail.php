@@ -11,6 +11,11 @@ class EvaluationAnswerDetail extends Model
     public $incrementing = true;
     protected $fillable = ['evaluation_question_id', 'evaluation_answer_id', 'score'];
 
+    protected $casts = [
+        'evaluation_question_id' => 'integer',
+        'evaluation_answer_id' => 'integer',
+    ];
+
     public function evaluationQuestion()
     {
         return $this->belongsTo(EvaluationQuestion::class, 'evaluation_question_id', 'evaluation_question_id');

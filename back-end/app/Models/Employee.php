@@ -14,6 +14,12 @@ class Employee extends Model
         'fullname', 'division', 'basic', 'grade', 'stafftype', 'start_date', 'type'
     ];
 
+    protected $casts = [
+        'plant_id' => 'integer',
+        'department_id' => 'integer',
+        'position_id' => 'integer',
+    ];
+
     public function account()
     {
         return $this->belongsTo(Account::class, 'code', 'code');

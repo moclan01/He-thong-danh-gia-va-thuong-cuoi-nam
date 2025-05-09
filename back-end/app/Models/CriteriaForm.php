@@ -11,6 +11,10 @@ class CriteriaForm extends Model
     public $incrementing = true;
     protected $fillable = ['evaluation_cycle_id', 'criteria_form_name'];
 
+    protected $casts = [
+        'evaluation_cycle_id' => 'integer',
+    ];
+
     public function evaluationCycle()
     {
         return $this->belongsTo(EvaluationCycle::class, 'evaluation_cycle_id', 'evaluation_cycle_id');
