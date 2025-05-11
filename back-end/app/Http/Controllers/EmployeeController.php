@@ -17,7 +17,6 @@ class EmployeeController extends Controller
         $this->employeeRepository = $employeeRepository;
 
         $this->middleware('auth:sanctum');
-        $this->middleware('role:employee')->only(['getProfile', 'changePassword']);
     }
 
 
@@ -94,31 +93,38 @@ class EmployeeController extends Controller
 
     public function getProfile(Request $request)
     {
-        $account = Auth::user(); 
-        $employee = $this->employeeRepository->getById($account->code);
+        $account = Auth::user();
+        if (!$account) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
+        $employee = $this->employeeRepository->getById($account->code);
         if (!$employee) {
             return response()->json(['message' => 'Employee profile not found'], 404);
         }
 
-        return response()->json($employee);
+        $safeEmployee = $employee->only(['code', 'fullname', 'division', 'start_date', 'type']);
+        $safeEmployee['department'] = $employee->department ? $employee->department->department_name : null;
+
+        return response()->json($safeEmployee);
     }
-   
+
     public function changePassword(Request $request)
     {
-        $account = Auth::user();
+        $account = $request->user();
+        if (!$account) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
         $validated = $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:6|confirmed',
+            'new_password' => 'required|string|confirmed',
         ]);
 
-        // Kiểm tra mật khẩu cũ
         if (!Hash::check($validated['current_password'], $account->password)) {
             return response()->json(['message' => 'Current password is incorrect'], 401);
         }
 
-        // Cập nhật mật khẩu mới
         $account->update([
             'password' => Hash::make($validated['new_password']),
         ]);

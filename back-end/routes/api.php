@@ -6,6 +6,7 @@ use App\Http\Controllers\CriteriaFormController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EvaluationAnswerController;
+use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\EvaluationCriteriaController;
 use App\Http\Controllers\EvaluationCycleController;
 use App\Http\Controllers\EvaluationQuestionController;
@@ -16,9 +17,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
-Route::middleware(['auth:sanctum', 'role:employee'])->group(function () {
-    Route::get('/employee/me', [EmployeeController::class, 'getProfile']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('logout', [AccountController::class, 'logout']);
+    Route::get('employee/profile', [EmployeeController::class, 'getProfile']);
+    Route::post('employee/change-password', [EmployeeController::class, 'changePassword']);
+    Route::post('evaluations/participate', [EvaluationController::class, 'participate']);
+    Route::get('evaluations/{evaluationAnswerId}', [EvaluationController::class, 'viewResult']);
+    Route::get('evaluations/history', [EvaluationController::class, 'viewHistory']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

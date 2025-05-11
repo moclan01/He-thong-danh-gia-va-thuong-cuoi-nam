@@ -9,11 +9,23 @@ class EvaluationAnswerDetail extends Model
     protected $primaryKey = 'evaluation_answer_detail_id';
     protected $keyType = 'int';
     public $incrementing = true;
-    protected $fillable = ['evaluation_question_id', 'evaluation_answer_id', 'score'];
+    protected $fillable = [
+        'evaluation_question_id',
+        'evaluation_answer_id',
+        'score',
+        'employee_score',
+        'manager_score',
+        'supervisor_score',
+        'director_score',
+    ];
 
     protected $casts = [
         'evaluation_question_id' => 'integer',
         'evaluation_answer_id' => 'integer',
+        'employee_score' => 'float',
+        'manager_score' => 'float',
+        'supervisor_score' => 'float',
+        'director_score' => 'float',
     ];
 
     public function evaluationQuestion()

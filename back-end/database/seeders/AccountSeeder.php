@@ -39,7 +39,7 @@ class AccountSeeder extends Seeder
             [
                 'code' => '019264',
                 'username' => 'hr1',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('  '),
                 'role' => 'hr',
                 'status' => 'active',
             ],
