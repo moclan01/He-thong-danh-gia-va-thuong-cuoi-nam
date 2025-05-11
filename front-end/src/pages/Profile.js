@@ -13,13 +13,6 @@ function Profile() {
       .catch(() => navigate('/login'));
   }, [navigate]);
 
-  const handleLogout = () => {
-    axiosInstance.post('/logout').then(() => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      navigate('/login');
-    });
-  };
 
   return (
     <div className="d-flex min-vh-100">
@@ -27,7 +20,6 @@ function Profile() {
       <div className="flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <strong>Xin chào, {employee?.fullname || '...'}</strong>
-          <button className="btn btn-danger" onClick={handleLogout}>Đăng xuất</button>
         </div>
 
         <h2>Thông tin nhân viên</h2>

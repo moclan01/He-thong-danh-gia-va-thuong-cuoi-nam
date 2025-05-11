@@ -11,6 +11,7 @@ function Login() {
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async e => {
     e.preventDefault();
     try {
@@ -23,6 +24,7 @@ function Login() {
       setError('Sai tên đăng nhập hoặc mật khẩu');
     }
   };
+
   return (
     <div className="container mt-5" style={{ maxWidth: '400px' }}>
       <h2 className="mb-4">Đăng nhập</h2>

@@ -24,21 +24,22 @@ function ChangePassword() {
     setError('');
 
     try {
-      await axiosInstance.post('/employee/change-password', form);
-      setMessage('Đổi mật khẩu thành công');
-      setForm({ current_password: '', new_password: '', new_password_confirmation: '' });
+      const res = await axiosInstance.post('/employee/change-password', form);
+      setMessage(res.data.message || 'Đổi mật khẩu thành công');
+
+      setTimeout(() => {
+        // axiosInstance.post('/logout').finally(() => {
+        //   localStorage.removeItem('token');
+        //   localStorage.removeItem('user');
+        //   navigate('/login');
+        // });
+        navigate('/home');
+      }, 2000); // Sau khi đổi mật khẩu thành công, thực hiện logout và điều hướng đến trang login
     } catch (err) {
       setError(err.response?.data?.message || 'Lỗi không xác định');
     }
   };
 
-  const handleLogout = () => {
-    axiosInstance.post('/logout').then(() => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      navigate('/login');
-    });
-  };
 
   return (
     <div className="d-flex min-vh-100">
@@ -46,7 +47,6 @@ function ChangePassword() {
       <div className="flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <strong>Đổi mật khẩu</strong>
-          <button className="btn btn-danger" onClick={handleLogout}>Đăng xuất</button>
         </div>
 
         <form onSubmit={handleSubmit} style={{ maxWidth: '500px' }}>

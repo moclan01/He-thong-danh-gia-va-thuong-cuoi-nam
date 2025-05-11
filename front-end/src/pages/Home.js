@@ -25,12 +25,10 @@ function Home() {
   return (
     <div className="container-fluid">
       <div className="row min-vh-100">
-        {/* Sidebar */}
         <div className="col-md-3 bg-dark text-white p-3">
           <Sidebar />
         </div>
 
-        {/* Content */}
         <div className="col-md-9 p-4">
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h5>Xin chào, {employee?.fullname || '...'}</h5>
