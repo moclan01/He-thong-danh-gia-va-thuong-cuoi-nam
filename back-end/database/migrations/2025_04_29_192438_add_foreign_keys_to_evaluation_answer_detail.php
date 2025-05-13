@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('evaluation_answer_detail', function (Blueprint $table) {
+        Schema::table('evaluation_answer_details', function (Blueprint $table) {
             // Thêm ràng buộc khóa ngoại cho cột evaluation_answer_id
             $table->foreign('evaluation_answer_id')
                   ->references('evaluation_answer_id')
@@ -31,7 +31,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('evaluation_answer_detail', function (Blueprint $table) {
+        Schema::table('evaluation_answer_details', function (Blueprint $table) {
             // Xóa các ràng buộc khóa ngoại khi rollback
             $table->dropForeign(['evaluation_answer_id']);
             $table->dropForeign(['evaluation_question_id']);

@@ -97,7 +97,7 @@ Route::prefix('criteria-forms')->group(function () {
     Route::delete('/{id}', [CriteriaFormController::class, 'destroy']); 
 });
 
-Route::prefix('evaluation-criteria')->group(function () {
+Route::prefix('evaluation-criterias')->group(function () {
     Route::get('/', [EvaluationCriteriaController::class, 'index']);
     Route::post('/', [EvaluationCriteriaController::class, 'store']);
     Route::get('/{id}', [EvaluationCriteriaController::class, 'show']);

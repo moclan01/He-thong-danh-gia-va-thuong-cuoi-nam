@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('evaluation_criteria', function (Blueprint $table) {
-            $table->id('evaluation_criteria_id')->primary();
-            $table->foreignId('criteria_form_id')->nullable();
-            $table->string('criteria_name');
+        Schema::create('criteria_forms', function (Blueprint $table) {
+            $table->id('criteria_form_id')->primary();
+            $table->foreignId('evaluation_cycle_id')->nullable();
+            $table->string('criteria_form_name');
             $table->timestamps();
 
         });
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('evaluation_criteria');
+        Schema::dropIfExists('criteria_forms');
     }
 };

@@ -16,35 +16,35 @@ class AccountSeeder extends Seeder
     {
         $accounts = [
             [
-                'code' => '006330',
+                'code' => '3870',
                 'username' => 'employee1',
                 'password' => Hash::make('password123'),
                 'role' => 'employee',
                 'status' => 'active',
             ],
             [
-                'code' => '014106',
+                'code' => '3979',
                 'username' => 'manager1',
                 'password' => Hash::make('password123'),
                 'role' => 'manager',
                 'status' => 'active',
             ],
             [
-                'code' => '018252',
+                'code' => '4639',
                 'username' => 'supervisor1',
                 'password' => Hash::make('password123'),
                 'role' => 'supervisor',
                 'status' => 'active',
             ],
             [
-                'code' => '019264',
+                'code' => '6330',
                 'username' => 'hr1',
-                'password' => Hash::make('  '),
+                'password' => Hash::make('password123'),
                 'role' => 'hr',
                 'status' => 'active',
             ],
             [
-                'code' => '036071',
+                'code' => '6851',
                 'username' => 'director1',
                 'password' => Hash::make('password123'),
                 'role' => 'director',

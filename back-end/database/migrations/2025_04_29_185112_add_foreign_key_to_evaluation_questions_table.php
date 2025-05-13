@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('evaluation_questions', function (Blueprint $table) {
             $table->foreign('evaluation_criteria_id')
                 ->references('evaluation_criteria_id')
-                ->on('evaluation_criteria')
+                ->on('evaluation_criterias')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
         });

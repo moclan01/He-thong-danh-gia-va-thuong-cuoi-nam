@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->foreign('criteria_form_id')
                   ->references('criteria_form_id')
-                  ->on('criteria_form')
+                  ->on('criteria_forms')
                   ->onDelete('cascade');
         });
     }

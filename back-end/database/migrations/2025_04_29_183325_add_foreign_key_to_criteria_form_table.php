@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('criteria_form', function (Blueprint $table) {
+        Schema::table('criteria_forms', function (Blueprint $table) {
             $table->foreign('evaluation_cycle_id')
                 ->references('evaluation_cycle_id')
                 ->on('evaluation_cycles')
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('criteria_form', function (Blueprint $table) {
+        Schema::table('criteria_forms', function (Blueprint $table) {
             $table->dropForeign(['evaluation_cycle_id']);
         });
     }
