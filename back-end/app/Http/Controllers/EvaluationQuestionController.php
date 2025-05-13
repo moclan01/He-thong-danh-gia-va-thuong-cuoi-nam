@@ -83,4 +83,16 @@ class EvaluationQuestionController extends Controller
 
         return response()->json($evaluationQuestion);
     }
+
+    public function getByCriteria($criteriaId)
+{
+    $questions = EvaluationQuestion::where('evaluation_criteria_id', $criteriaId)->get();
+
+    if ($questions->isEmpty()) {
+        return response()->json(['message' => 'Không có câu hỏi nào cho tiêu chí này'], 404);
+    }
+
+    return response()->json($questions);
+}
+
 }

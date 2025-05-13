@@ -112,6 +112,7 @@ Route::prefix('evaluation-questions')->group(function () {
     Route::put('/{id}', [EvaluationQuestionController::class, 'update']);
     Route::delete('/{id}', [EvaluationQuestionController::class, 'destroy']);
     Route::get('/{id}/details', [EvaluationQuestionController::class, 'showWithDetails']);
+    Route::get('/evaluation-criterias/{id}/questions', [EvaluationQuestionController::class, 'getByCriteria']);
 });
 
 Route::prefix('evaluation-answers')->group(function () {
