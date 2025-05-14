@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../services/axiosInstance';
+import axiosInstance from '../services/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
  function SelfAssessment() {
