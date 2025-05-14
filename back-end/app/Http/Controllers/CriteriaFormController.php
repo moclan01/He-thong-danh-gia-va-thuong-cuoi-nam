@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CriteriaForm;
+use App\Models\EvaluationCriteria;
 use App\Repositories\Interfaces\ICriteriaFormRepository;
 use Illuminate\Http\Request;
 
@@ -69,4 +71,43 @@ class CriteriaFormController extends Controller
 
         return response()->json(['message' => 'Criteria Form deleted successfully']);
     }
+
+    public function getCriteriaList($id)
+    {
+        $criteriaForm = CriteriaForm::with('evaluationCriteria')->find($id);
+
+        if (!$criteriaForm) {
+            return response()->json(['message' => 'Criteria Form not found'], 404);
+        }
+
+        return response()->json($criteriaForm->evaluationCriteria);
+    }
+
+    public function addCriteriaToForm(Request $request, $formId)
+    {
+        $validated = $request->validate([
+            'evaluation_criteria_id' => 'required|integer|exists:evaluation_criterias,evaluation_criteria_id',
+        ]);
+
+        $criteriaForm = CriteriaForm::find($formId);
+
+        if (!$criteriaForm) {
+            return response()->json(['message' => 'Criteria Form not found'], 404);
+        }
+
+        $criteria = EvaluationCriteria::find($validated['evaluation_criteria_id']);
+
+        if (!$criteria) {
+            return response()->json(['message' => 'Evaluation Criteria not found'], 404);
+        }
+
+        if ($criteriaForm->evaluationCriteria->contains($criteria)) {
+            return response()->json(['message' => 'Criteria already exists in this form'], 400);
+        }
+
+        $criteriaForm->evaluationCriteria()->attach($criteria);
+
+        return response()->json(['message' => 'Criteria added to form successfully']);
+    }
+
 }

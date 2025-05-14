@@ -35,7 +35,7 @@ class EvaluationQuestionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'evaluation_criteria_id' => 'required|integer|exists:evaluation_criteria,evaluation_criteria_id',
+            'evaluation_criteria_id' => 'required|integer|exists:evaluation_criterias,evaluation_criteria_id',
             'question_name' => 'required|string|max:255',
             'max_score' => 'required|integer|min:1',
         ]);
@@ -48,7 +48,7 @@ class EvaluationQuestionController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'evaluation_criteria_id' => 'sometimes|integer|exists:evaluation_criteria,evaluation_criteria_id',
+            'evaluation_criteria_id' => 'sometimes|integer|exists:evaluation_criterias,evaluation_criteria_id',
             'question_name' => 'required|string|max:255',
             'max_score' => 'required|integer|min:1',
         ]);
@@ -83,16 +83,5 @@ class EvaluationQuestionController extends Controller
 
         return response()->json($evaluationQuestion);
     }
-
-    public function getByCriteria($criteriaId)
-{
-    $questions = EvaluationQuestion::where('evaluation_criteria_id', $criteriaId)->get();
-
-    if ($questions->isEmpty()) {
-        return response()->json(['message' => 'Không có câu hỏi nào cho tiêu chí này'], 404);
-    }
-
-    return response()->json($questions);
-}
 
 }

@@ -13,6 +13,7 @@ class EvaluationQuestion extends Model
 
     protected $casts = [
         'evaluation_criteria_id' => 'integer',
+        'max_score' => 'integer'
     ];
 
     public function evaluationCriteria()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EvaluationCriteria;
 use App\Repositories\Interfaces\IEvaluationCriteriaRepository;
 use Illuminate\Http\Request;
 
@@ -67,4 +68,31 @@ class EvaluationCriteriaController extends Controller
 
         return response()->json(['message' => 'Evaluation Criteria deleted successfully']);
     }
+
+    public function getQuestions($id)
+    {
+        $evaluationCriteria = EvaluationCriteria::with('evaluationQuestions')->find($id);
+
+        if (!$evaluationCriteria) {
+            return response()->json(['message' => 'Evaluation Criteria not found'], 404);
+        }
+
+        return response()->json($evaluationCriteria->evaluationQuestions);
+    }
+
+    public function addCriteriaToForm(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'criteria_form_id' => 'nullable|integer|exists:criteria_forms,criteria_form_id',
+        ]);
+
+        $evaluationCriteria = $this->evaluationCriteriaRepository->update($id, $validated);
+
+        if (!$evaluationCriteria) {
+            return response()->json(['message' => 'Evaluation Criteria not found'], 404);
+        }
+
+        return response()->json($evaluationCriteria);
+    }
+
 }

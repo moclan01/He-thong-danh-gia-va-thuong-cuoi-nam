@@ -8,12 +8,12 @@ use App\Repositories\Interfaces\ICriteriaFormRepository;
 class CriteriaFormRepository implements ICriteriaFormRepository{
     public function getAll()
     {
-        return CriteriaForm::with(['evaluationCycle', 'evaluationCriteria', 'evaluationAnswers'])->get();
+        return CriteriaForm::with(['evaluationCycle', 'evaluationCriteria'])->get();
     }
 
     public function getById($id)
     {
-        return CriteriaForm::with(['evaluationCycle', 'evaluationCriteria', 'evaluationAnswers'])->find($id);
+        return CriteriaForm::with(['evaluationCycle', 'evaluationCriteria'])->find($id);
     }
 
     public function create(array $data)

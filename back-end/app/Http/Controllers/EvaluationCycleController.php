@@ -35,6 +35,7 @@ class EvaluationCycleController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'cycle_name' => 'required|string|max:255',
             'department_id' => 'nullable|integer|exists:departments,department_id',
             'start_date' => 'required|date|before_or_equal:end_date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -49,6 +50,7 @@ class EvaluationCycleController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
+            'cycle_name' => 'required|string|max:255',
             'department_id' => 'nullable|integer|exists:departments,department_id',
             'start_date' => 'required|date|before_or_equal:end_date',
             'end_date' => 'required|date|after_or_equal:start_date',

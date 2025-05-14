@@ -8,12 +8,12 @@ use App\Repositories\Interfaces\IEvaluationQuestionRepository;
 class EvaluationQuestionRepository implements IEvaluationQuestionRepository{
     public function getAll()
     {
-        return EvaluationQuestion::with(['evaluationCriteria', 'evaluationAnswerDetails'])->get();
+        return EvaluationQuestion::with(['evaluationCriteria'])->get();
     }
 
     public function getById($id)
     {
-        return EvaluationQuestion::with(['evaluationCriteria', 'evaluationAnswerDetails'])->findOrFail($id);
+        return EvaluationQuestion::with(['evaluationCriteria'])->findOrFail($id);
     }
 
     public function create(array $data)
@@ -26,7 +26,7 @@ class EvaluationQuestionRepository implements IEvaluationQuestionRepository{
         $question = EvaluationQuestion::find($id);
         if ($question) {
             $question->update($data);
-            return EvaluationQuestion::with(['evaluationCriteria', 'evaluationAnswerDetails'])->find($id);
+            return EvaluationQuestion::with(['evaluationCriteria'])->find($id);
         }
         return null;
     }

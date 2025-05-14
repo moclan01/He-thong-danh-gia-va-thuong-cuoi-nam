@@ -6,6 +6,7 @@ use App\Http\Controllers\CriteriaFormController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EvaluationAnswerController;
+use App\Http\Controllers\EvaluationAnswerDetailController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\EvaluationCriteriaController;
 use App\Http\Controllers\EvaluationCycleController;
@@ -25,10 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('evaluations/participate', [EvaluationController::class, 'participate']);
     Route::get('evaluations/{evaluationAnswerId}', [EvaluationController::class, 'viewResult']);
     Route::get('evaluations/history', [EvaluationController::class, 'viewHistory']);
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('employee/profile', [EmployeeController::class, 'getProfile']);
 });
 
 Route::prefix('departments')->group(function () {
@@ -95,6 +92,7 @@ Route::prefix('criteria-forms')->group(function () {
     Route::get('/{id}', [CriteriaFormController::class, 'show']);       
     Route::put('/{id}', [CriteriaFormController::class, 'update']);     
     Route::delete('/{id}', [CriteriaFormController::class, 'destroy']); 
+    Route::get('/{id}/criterias', [CriteriaFormController::class, 'getCriteriaList']);
 });
 
 Route::prefix('evaluation-criterias')->group(function () {
@@ -103,6 +101,8 @@ Route::prefix('evaluation-criterias')->group(function () {
     Route::get('/{id}', [EvaluationCriteriaController::class, 'show']);
     Route::put('/{id}', [EvaluationCriteriaController::class, 'update']);
     Route::delete('/{id}', [EvaluationCriteriaController::class, 'destroy']);
+    Route::get('/{id}/questions', [EvaluationCriteriaController::class, 'getQuestions']);
+    Route::put('/{id}/add-criteria', [EvaluationCriteriaController::class, 'addCriteriaToForm']);
 });
 
 Route::prefix('evaluation-questions')->group(function () {
@@ -112,7 +112,6 @@ Route::prefix('evaluation-questions')->group(function () {
     Route::put('/{id}', [EvaluationQuestionController::class, 'update']);
     Route::delete('/{id}', [EvaluationQuestionController::class, 'destroy']);
     Route::get('/{id}/details', [EvaluationQuestionController::class, 'showWithDetails']);
-    Route::get('/evaluation-criterias/{id}/questions', [EvaluationQuestionController::class, 'getByCriteria']);
 });
 
 Route::prefix('evaluation-answers')->group(function () {
@@ -122,4 +121,12 @@ Route::prefix('evaluation-answers')->group(function () {
     Route::put('/{id}', [EvaluationAnswerController::class, 'update']);
     Route::delete('/{id}', [EvaluationAnswerController::class, 'destroy']);
     Route::get('/{id}/details', [EvaluationAnswerController::class, 'showWithDetails']);
+});
+
+Route::prefix('evaluation-answer-details')->group(function () {
+    Route::get('/', [EvaluationAnswerDetailController::class, 'index']);
+    Route::get('/{id}', [EvaluationAnswerDetailController::class, 'show']);
+    Route::post('/', [EvaluationAnswerDetailController::class, 'store']);
+    Route::put('/{id}', [EvaluationAnswerDetailController::class, 'update']);
+    Route::delete('/{id}', [EvaluationAnswerDetailController::class, 'destroy']);
 });

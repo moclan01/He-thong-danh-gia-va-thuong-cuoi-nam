@@ -7,6 +7,7 @@ use App\Repositories\AccountRepository;
 use App\Repositories\CriteriaFormRepository;
 use App\Repositories\DepartmentRepository;
 use App\Repositories\EmployeeRepository;
+use App\Repositories\EvaluationAnswerDetailRepository;
 use App\Repositories\EvaluationAnswerRepository;
 use App\Repositories\EvaluationCriteriaRepository;
 use App\Repositories\EvaluationCycleRepository;
@@ -15,6 +16,7 @@ use App\Repositories\Interfaces\IAccountRepository;
 use App\Repositories\Interfaces\ICriteriaFormRepository;
 use App\Repositories\Interfaces\IDepartmentRepository;
 use App\Repositories\Interfaces\IEmployeeRepository;
+use App\Repositories\Interfaces\IEvaluationAnswerDetailRepository;
 use App\Repositories\Interfaces\IEvaluationAnswerRepository;
 use App\Repositories\Interfaces\IEvaluationCriteriaRepository;
 use App\Repositories\Interfaces\IEvaluationCycleRepository;
@@ -47,7 +49,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEvaluationCriteriaRepository::class, EvaluationCriteriaRepository::class);
         $this->app->bind(IEvaluationQuestionRepository::class,EvaluationQuestionRepository::class);
         $this->app->bind(IEvaluationAnswerRepository::class,EvaluationAnswerRepository::class);
-    }
+        $this->app->bind(IEvaluationAnswerDetailRepository::class,EvaluationAnswerDetailRepository::class);
+    }   
 
     /**
      * Bootstrap any application services.

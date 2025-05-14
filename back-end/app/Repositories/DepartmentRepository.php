@@ -8,12 +8,12 @@ use App\Repositories\Interfaces\IDepartmentRepository;
 class DepartmentRepository implements IDepartmentRepository {
     public function getAll()
     {
-        return Department::with('employee')->get();
+        return Department::with('manager')->get();
     }
 
     public function getById($id)
     {
-        return Department::with('employee')->find($id);
+        return Department::with('manager')->find($id);
     }
 
     public function create(array $data)
