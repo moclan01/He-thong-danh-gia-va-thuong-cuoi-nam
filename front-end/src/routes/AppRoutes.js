@@ -8,7 +8,10 @@ import SelfAssessment from '../pages/evaluation/SelfAssessment';
 import Logout from '../pages/Logout';
 import CriteriaManage from '../pages/evaluation/EvaluationCriteriaManage';
 import AddCriteria from '../pages/evaluation/AddCriteria';
-import EvaluationQuestionManage from '../pages/evaluation/EvaluationQuestionManage';
+import UpdateCriteria from '../pages/evaluation/UpdateCriteria';
+import CriteriaQuestions from '../pages/evaluation/EvaluationQuestions';
+import AddQuestion from '../pages/evaluation/AddEvaluationQuestion';
+import UpdateQuestion from '../pages/evaluation/UpdateEvaluationQuestion';
 
 export default function AppRoute() {
   return (
@@ -22,8 +25,11 @@ export default function AppRoute() {
         <Route path='/change-password' element={<ChangePassword />} />
         <Route path="/self-assessment" element={<SelfAssessment />} />
         <Route path='/criteria-management' element={<CriteriaManage />} />
-        <Route path='/criteria/add' element={<AddCriteria />}/>
-
+        <Route path='/criteria/add' element={<AddCriteria />} />
+        <Route path='/criteria/update/:id' element={<UpdateCriteria />} />
+        <Route path="/criterias/:id/questions" element={<CriteriaQuestions />} />
+        <Route path="/questions/add/:criteriaId" element={<AddQuestion />} />
+        <Route path="/questions/update/:id" element={<UpdateQuestion />} />
         {/* Thêm các route khác ở đây */}
       </Routes>
     </Router>

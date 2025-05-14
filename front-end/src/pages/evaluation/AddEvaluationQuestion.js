@@ -1,58 +1,76 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import MainLayout from '../MainLayout';
-import { useNavigate } from 'react-router-dom';
-import FormInput from '../../components/FormInput';
 
-function AddEvaluationQuestion() {
-  const [formData, setFormData] = useState({ question_text: '' });
+function AddQuestion() {
+  const { criteriaId } = useParams(); // Lấy ID tiêu chí từ URL
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    question_name: '',
+    max_score: ''
+  });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post('/evaluation-questions', formData);
-      setSuccess('Thêm câu hỏi đánh giá thành công.');
+      await axiosInstance.post('/evaluation-questions', {
+        ...formData,
+        evaluation_criteria_id: criteriaId
+      });
+      setSuccess('Thêm câu hỏi thành công.');
       setError('');
-      setFormData({ question_text: '' });
-      setTimeout(() => navigate('/questions'), 2000); // Chờ 5s rồi quay lại danh sách
+      setTimeout(() => navigate(`/criterias/${criteriaId}/questions`), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Không thể thêm câu hỏi đánh giá.');
+      setError(err.response?.data?.message || 'Không thể thêm câu hỏi.');
     }
   };
 
   return (
     <MainLayout>
-      <h2>Thêm câu hỏi đánh giá</h2>
+      <h2>Thêm câu hỏi cho tiêu chí</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
       <form onSubmit={handleSubmit}>
-        <FormInput
-          label="Nội dung câu hỏi"
-          name="question_text"
-          value={formData.question_text}
-          onChange={handleInputChange}
-          required
-          placeholder="Nhập nội dung câu hỏi"
-        />
+        <div className="mb-3">
+          <label>Câu hỏi</label>
+          <input
+            type="text"
+            name="question_name"
+            className="form-control"
+            value={formData.question_name}
+            onChange={handleChange}
+            required
+            placeholder="Nhập nội dung câu hỏi"
+          />
+        </div>
+        <div className="mb-3">
+          <label>Điểm tối đa</label>
+          <input
+            type="number"
+            name="max_score"
+            className="form-control"
+            value={formData.max_score}
+            onChange={handleChange}
+            required
+            placeholder="Nhập điểm tối đa"
+          />
+        </div>
         <div className="d-flex justify-content-end">
-          <button className="btn btn-secondary me-2" onClick={() => navigate('/questions')}>
-            Hủy
-          </button>
-          <button className="btn btn-primary" type="submit">
-            Thêm
-          </button>
+          <button className="btn btn-secondary me-2" onClick={() => navigate(-1)}>Hủy</button>
+          <button type="submit" className="btn btn-primary">Thêm</button>
         </div>
       </form>
     </MainLayout>
   );
 }
 
-export default AddEvaluationQuestion;
+export default AddQuestion;

@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
-import { useNavigate, useParams } from 'react-router-dom';
 import MainLayout from '../MainLayout';
-import FormInput from '../../components/FormInput';
 
-function UpdateEvaluationQuestion() {
-  const [formData, setFormData] = useState({ question_text: '' });
+function UpdateQuestion() {
+  const { id } = useParams(); // evaluation_question_id
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    question_name: '',
+    max_score: '',
+    evaluation_criteria_id: ''
+  });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { id } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchQuestion();
@@ -17,26 +20,31 @@ function UpdateEvaluationQuestion() {
 
   const fetchQuestion = async () => {
     try {
-      const response = await axiosInstance.get(`/evaluation-questions/${id}`);
-      setFormData({ question_text: response.data.question_text });
+      const res = await axiosInstance.get(`/evaluation-questions/${id}`);
+      setFormData({
+        question_name: res.data.question_name,
+        max_score: res.data.max_score,
+        evaluation_criteria_id: res.data.evaluation_criteria_id
+      });
     } catch (err) {
-      setError('Không thể tải thông tin câu hỏi đánh giá.');
+      setError('Không thể tải dữ liệu câu hỏi.');
     }
   };
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axiosInstance.put(`/evaluation-questions/${id}`, formData);
-      setSuccess('Cập nhật câu hỏi đánh giá thành công.');
+      setSuccess('Cập nhật câu hỏi thành công.');
       setError('');
-      setTimeout(() => navigate('/questions'), 5000); // 5s rồi quay lại
+      setTimeout(() => navigate(`/criterias/${formData.evaluation_criteria_id}/questions`), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Không thể cập nhật câu hỏi đánh giá.');
+      setError(err.response?.data?.message || 'Không thể cập nhật câu hỏi.');
     }
   };
 
@@ -47,25 +55,35 @@ function UpdateEvaluationQuestion() {
       {success && <div className="alert alert-success">{success}</div>}
 
       <form onSubmit={handleSubmit}>
-        <FormInput
-          label="Nội dung câu hỏi"
-          name="question_text"
-          value={formData.question_text}
-          onChange={handleInputChange}
-          required
-          placeholder="Nhập nội dung câu hỏi"
-        />
+        <div className="mb-3">
+          <label>Câu hỏi</label>
+          <input
+            type="text"
+            name="question_name"
+            className="form-control"
+            value={formData.question_name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label>Điểm tối đa</label>
+          <input
+            type="number"
+            name="max_score"
+            className="form-control"
+            value={formData.max_score}
+            onChange={handleChange}
+            required
+          />
+        </div>
         <div className="d-flex justify-content-end">
-          <button className="btn btn-secondary me-2" onClick={() => navigate('/questions')}>
-            Hủy
-          </button>
-          <button className="btn btn-primary" type="submit">
-            Cập nhật
-          </button>
+          <button className="btn btn-secondary me-2" onClick={() => navigate(-1)}>Hủy</button>
+          <button type="submit" className="btn btn-primary">Cập nhật</button>
         </div>
       </form>
     </MainLayout>
   );
 }
 
-export default UpdateEvaluationQuestion;
+export default UpdateQuestion;

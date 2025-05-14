@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../services/axiosInstance';
 import FormInput from '../../components/FormInput';
 
-import { Button, Alert } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import MainLayout from '../MainLayout';
 
@@ -39,7 +38,7 @@ function UpdateCriteria() {
       await axiosInstance.put(`/evaluation-criterias/${id}`, formData);
       setSuccess('Cập nhật tiêu chí đánh giá thành công.');
       setError('');
-      setTimeout(() => navigate('/criteria'), 2000); // Chuyển hướng sau 2 giây
+      setTimeout(() => navigate('/criteria-management'), 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể cập nhật tiêu chí đánh giá.');
     }
@@ -47,9 +46,10 @@ function UpdateCriteria() {
 
   return (
     <MainLayout>
-      <h2>Sửa tiêu chí đánh giá</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      {success && <Alert variant="success">{success}</Alert>}
+      <h2 className="mb-4">Sửa tiêu chí đánh giá</h2>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
 
       <form onSubmit={handleSubmit}>
         <FormInput
@@ -60,17 +60,18 @@ function UpdateCriteria() {
           required
           placeholder="Nhập tên tiêu chí"
         />
-        <div className="d-flex justify-content-end">
-          <Button
-            variant="secondary"
+
+        <div className="d-flex justify-content-end mt-3">
+          <button
+            type="button"
+            className="btn btn-secondary me-2"
             onClick={() => navigate('/criteria')}
-            className="me-2"
           >
             Hủy
-          </Button>
-          <Button type="submit" variant="primary">
+          </button>
+          <button type="submit" className="btn btn-primary">
             Cập nhật
-          </Button>
+          </button>
         </div>
       </form>
     </MainLayout>

@@ -75,7 +75,7 @@ function CriteriaManage() {
                 <td>
                   <button
                     className="btn btn-warning btn-sm me-2"
-                    onClick={() => navigate(`/criteria/edit/${criterion.evaluation_criteria_id}`)}
+                    onClick={() => navigate(`/criteria/update/${criterion.evaluation_criteria_id}`)}
                   >
                     Sửa
                   </button>
