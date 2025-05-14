@@ -68,8 +68,8 @@ export default function Sidebar() {
                             </button>
                         </li>
                         <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/form-setup')}>
-                                Tạo form đánh giá
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/form-management')}>
+                                Quản lý form đánh giá
                             </button>
                         </li>
                     </>
