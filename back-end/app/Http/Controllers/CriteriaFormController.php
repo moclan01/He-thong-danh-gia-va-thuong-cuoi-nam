@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\CriteriaForm;
+use App\Models\Employee;
 use App\Models\EvaluationCriteria;
+use App\Models\EvaluationCycle;
 use App\Repositories\Interfaces\ICriteriaFormRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CriteriaFormController extends Controller
 {
@@ -83,31 +86,14 @@ class CriteriaFormController extends Controller
         return response()->json($criteriaForm->evaluationCriteria);
     }
 
-    public function addCriteriaToForm(Request $request, $formId)
+    public function getFormByCycle($cycleId)
     {
-        $validated = $request->validate([
-            'evaluation_criteria_id' => 'required|integer|exists:evaluation_criterias,evaluation_criteria_id',
-        ]);
-
-        $criteriaForm = CriteriaForm::find($formId);
+        $criteriaForm = CriteriaForm::where('evaluation_cycle_id', $cycleId)->first();
 
         if (!$criteriaForm) {
-            return response()->json(['message' => 'Criteria Form not found'], 404);
+            return response()->json(['message' => 'Criteria Form not found for this evaluation cycle'], 404);
         }
 
-        $criteria = EvaluationCriteria::find($validated['evaluation_criteria_id']);
-
-        if (!$criteria) {
-            return response()->json(['message' => 'Evaluation Criteria not found'], 404);
-        }
-
-        if ($criteriaForm->evaluationCriteria->contains($criteria)) {
-            return response()->json(['message' => 'Criteria already exists in this form'], 400);
-        }
-
-        $criteriaForm->evaluationCriteria()->attach($criteria);
-
-        return response()->json(['message' => 'Criteria added to form successfully']);
+        return response()->json($criteriaForm);
     }
-
 }

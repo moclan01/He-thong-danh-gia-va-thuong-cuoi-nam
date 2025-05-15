@@ -7,7 +7,6 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EvaluationAnswerController;
 use App\Http\Controllers\EvaluationAnswerDetailController;
-use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\EvaluationCriteriaController;
 use App\Http\Controllers\EvaluationCycleController;
 use App\Http\Controllers\EvaluationQuestionController;
@@ -23,17 +22,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AccountController::class, 'logout']);
     Route::get('employee/profile', [EmployeeController::class, 'getProfile']);
     Route::post('employee/change-password', [EmployeeController::class, 'changePassword']);
-    Route::post('evaluations/participate', [EvaluationController::class, 'participate']);
-    Route::get('evaluations/{evaluationAnswerId}', [EvaluationController::class, 'viewResult']);
-    Route::get('evaluations/history', [EvaluationController::class, 'viewHistory']);
 });
 
 Route::prefix('departments')->group(function () {
-    Route::get('/', [DepartmentController::class, 'index']);   
-    Route::get('/{id}', [DepartmentController::class, 'show']);      
-    Route::post('/', [DepartmentController::class, 'store']);        
-    Route::put('/{id}', [DepartmentController::class, 'update']);   
-    Route::delete('/{id}', [DepartmentController::class, 'destroy']); 
+    Route::get('/', [DepartmentController::class, 'index']);
+    Route::get('/{id}', [DepartmentController::class, 'show']);
+    Route::post('/', [DepartmentController::class, 'store']);
+    Route::put('/{id}', [DepartmentController::class, 'update']);
+    Route::delete('/{id}', [DepartmentController::class, 'destroy']);
 });
 
 Route::prefix('employees')->group(function () {
@@ -42,6 +38,8 @@ Route::prefix('employees')->group(function () {
     Route::post('/', [EmployeeController::class, 'store']);
     Route::put('{id}', [EmployeeController::class, 'update']);
     Route::delete('{id}', [EmployeeController::class, 'destroy']);
+    Route::get('/code-r/{codeR}', [EmployeeController::class, 'getByCodeR']);
+    Route::get('/department/{departmentId}', [EmployeeController::class, 'getByDepartment']);
 });
 
 Route::prefix('accounts')->group(function () {
@@ -87,11 +85,11 @@ Route::prefix('evaluation-cycles')->group(function () {
 
 
 Route::prefix('criteria-forms')->group(function () {
-    Route::get('/', [CriteriaFormController::class, 'index']);          
-    Route::post('/', [CriteriaFormController::class, 'store']);         
-    Route::get('/{id}', [CriteriaFormController::class, 'show']);       
-    Route::put('/{id}', [CriteriaFormController::class, 'update']);     
-    Route::delete('/{id}', [CriteriaFormController::class, 'destroy']); 
+    Route::get('/', [CriteriaFormController::class, 'index']);
+    Route::post('/', [CriteriaFormController::class, 'store']);
+    Route::get('/{id}', [CriteriaFormController::class, 'show']);
+    Route::put('/{id}', [CriteriaFormController::class, 'update']);
+    Route::delete('/{id}', [CriteriaFormController::class, 'destroy']);
     Route::get('/{id}/criterias', [CriteriaFormController::class, 'getCriteriaList']);
 });
 
@@ -129,4 +127,17 @@ Route::prefix('evaluation-answer-details')->group(function () {
     Route::post('/', [EvaluationAnswerDetailController::class, 'store']);
     Route::put('/{id}', [EvaluationAnswerDetailController::class, 'update']);
     Route::delete('/{id}', [EvaluationAnswerDetailController::class, 'destroy']);
+    Route::post('/employee', [EvaluationAnswerDetailController::class, 'storeByEmployee']);
+    Route::put('/{id}/manager', [EvaluationAnswerDetailController::class, 'updateManagerScore']);
+    Route::put('/{id}/supervisor', [EvaluationAnswerDetailController::class, 'updateSupervisorScore']);
+    Route::put('/{id}/director', [EvaluationAnswerDetailController::class, 'updateDirectorScore']);
+
+    // Batch routes
+    Route::post('/employee/batch', [EvaluationAnswerDetailController::class, 'storeByEmployeeBatch']);
+    Route::put('/manager/batch', [EvaluationAnswerDetailController::class, 'updateManagerScoresBatch']);
+    Route::put('/supervisor/batch', [EvaluationAnswerDetailController::class, 'updateSupervisorScoresBatch']);
+    Route::put('/director/batch', [EvaluationAnswerDetailController::class, 'updateDirectorScoresBatch']);
 });
+
+Route::get('employees/{code}/evaluation-cycles', [EmployeeController::class, 'getEvaluationCycles']);
+Route::get('evaluation-cycles/{cycleId}/criteria-form', [CriteriaFormController::class, 'getFormByCycle']);

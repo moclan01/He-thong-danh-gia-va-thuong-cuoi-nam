@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
+use App\Models\EvaluationCycle;
 use App\Repositories\Interfaces\IEmployeeRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -103,8 +105,25 @@ class EmployeeController extends Controller
             return response()->json(['message' => 'Employee profile not found'], 404);
         }
 
-        $safeEmployee = $employee->only(['code', 'fullname', 'division', 'start_date', 'type']);
-        $safeEmployee['department'] = $employee->department ? $employee->department->department_name : null;
+        $safeEmployee = $employee->only([
+            'code',
+            'plant_id',
+            'department_id',
+            'position_id',
+            'code_r',
+            'fullname',
+            'division',
+            'basic',
+            'grade',
+            'stafftype',
+            'start_date',
+            'type'
+        ]);
+
+        $profile['plant_name'] = $employee->plant->plant_name ?? null;
+        $profile['department_name'] = $employee->department->department_name ?? null;
+        $profile['position_name'] = $employee->position->position_name ?? null;
+        $profile['manager_name'] = $employee->manager->fullname ?? null;
 
         return response()->json($safeEmployee);
     }
@@ -130,6 +149,37 @@ class EmployeeController extends Controller
         ]);
 
         return response()->json(['message' => 'Password changed successfully']);
+    }
+
+    public function getByCodeR($codeR)
+    {
+        $employees = Employee::where('code_r', $codeR)->get();
+        return response()->json($employees);
+    }
+
+    public function getByDepartment($departmentId)
+    {
+        $employees = Employee::where('department_id', $departmentId)->get();
+        return response()->json($employees);
+    }
+
+    public function getEvaluationCycles($code)
+    {
+        $employee = $this->employeeRepository->getById($code);
+
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
+
+        $departmentId = $employee->department_id;
+
+        if (!$departmentId) {
+            return response()->json(['message' => 'Employee has no department assigned'], 404);
+        }
+
+        $evaluationCycles = EvaluationCycle::where('department_id', $departmentId)->get();
+
+        return response()->json($evaluationCycles);
     }
 
 }

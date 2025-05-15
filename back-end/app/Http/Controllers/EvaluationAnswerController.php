@@ -73,16 +73,5 @@ class EvaluationAnswerController extends Controller
         return response()->json(['message' => 'Evaluation Answer deleted successfully']);
     }
 
-    // Route tùy chọn để lấy chi tiết bao gồm evaluationAnswerDetails
-    public function showWithDetails($id)
-    {
-        $evaluationAnswer = EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])->find($id);
-
-        if (!$evaluationAnswer) {
-            return response()->json(['message' => 'Evaluation Answer not found'], 404);
-        }
-
-        return response()->json($evaluationAnswer);
-    }
-
+    
 }
