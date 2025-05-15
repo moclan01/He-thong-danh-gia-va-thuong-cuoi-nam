@@ -17,6 +17,7 @@ import UpdateCycle from '../pages/evaluation/UpdateCycle';
 import CriteriaFormManage from '../pages/evaluation/EvaluationFormManage';
 import AddForm from '../pages/evaluation/AddForm';
 import CriteriaFormDetail from '../pages/evaluation/CriteriaFormDetail';
+import EmployeeSelfEvaluation from '../pages/SelfAssessment';
 
 
 export default function AppRoute() {
@@ -29,19 +30,20 @@ export default function AppRoute() {
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path='/change-password' element={<ChangePassword />} />
-        {/* <Route path="/self-assessment" element={<SelfAssessment />} /> */}
         <Route path='/criteria-management' element={<CriteriaManage />} />
         <Route path='/criteria/add' element={<AddCriteria />} />
         <Route path='/criteria/update/:id' element={<UpdateCriteria />} />
         <Route path="/criterias/:id/questions" element={<CriteriaQuestions />} />
         <Route path="/questions/add/:criteriaId" element={<AddQuestion />} />
         <Route path="/questions/update/:id" element={<UpdateQuestion />} />
-        <Route path='/cycle-management' element={<CycleManage />}/>
-        <Route path ='/cycle/add' element={<AddCycle />} />
-        <Route path ='/cycle/update/:id' element={<UpdateCycle />} />
+        <Route path='/cycle-management' element={<CycleManage />} />
+        <Route path='/cycle/add' element={<AddCycle />} />
+        <Route path='/cycle/update/:id' element={<UpdateCycle />} />
         <Route path='/form-management' element={<CriteriaFormManage />} />
         <Route path='/form/add' element={<AddForm />} />
         <Route path='/form-management/detail/:formId' element={<CriteriaFormDetail />} />
+        <Route path='/self-assessment' element={<EmployeeSelfEvaluation />} />
+
         {/* Thêm các route khác ở đây */}
       </Routes>
     </Router>

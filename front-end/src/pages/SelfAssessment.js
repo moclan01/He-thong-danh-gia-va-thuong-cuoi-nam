@@ -1,106 +1,173 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import MainLayout from './MainLayout';
 import axiosInstance from '../services/axiosInstance';
-import { useNavigate } from 'react-router-dom';
 
- function SelfAssessment() {
-  const [assessmentData, setAssessmentData] = useState([]);
-  const [employeeRole, setEmployeeRole] = useState(null); 
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+function EmployeeSelfEvaluation() {
+  const [profile, setProfile] = useState({});
+  const [evaluationCycles, setEvaluationCycles] = useState([]);
+  const [selectedCycle, setSelectedCycle] = useState('');
+  const [criteriaForm, setCriteriaForm] = useState(null);
+  const [criterias, setCriterias] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [scores, setScores] = useState({}); // lưu điểm theo question_id
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setEmployeeRole(user.role);  
-    } else {
-      navigate('/login');
+    fetchProfileAndCycles();
+  }, []);
+
+  const fetchProfileAndCycles = async () => {
+    try {
+      const res = await axiosInstance.get('/employee/profile');
+      setProfile(res.data);
+
+      const code = res.data.code;
+      const cycleRes = await axiosInstance.get(`/employees/${code}/evaluation-cycles`);
+      setEvaluationCycles(cycleRes.data);
+    } catch (error) {
+      console.error('Lỗi khi lấy hồ sơ hoặc chu kỳ:', error);
     }
-
-    axiosInstance.get('/self-assessment')
-      .then(res => setAssessmentData(res.data))
-      .catch(err => setError('Không thể tải dữ liệu đánh giá'));
-  }, [navigate]);
-
-  const handleSave = () => {
-    console.log('Lưu đánh giá:', assessmentData);
   };
 
-  const handleInputChange = (index, field, value) => {
-    const newAssessmentData = [...assessmentData];
-    newAssessmentData[index][field] = value;
-    setAssessmentData(newAssessmentData);
+  const fetchFormAndQuestions = async (cycleId) => {
+    try {
+      const formRes = await axiosInstance.get(`/evaluation-cycles/${cycleId}/criteria-form`);
+      const form = formRes.data;
+      setCriteriaForm(form);
+
+      const criteriaRes = await axiosInstance.get(`/criteria-forms/${form.criteria_form_id}/criterias`);
+      const criteriaList = criteriaRes.data;
+      setCriterias(criteriaList);
+
+      const allQuestions = [];
+      for (const criteria of criteriaList) {
+        const questionsRes = await axiosInstance.get(`/evaluation-criterias/${criteria.evaluation_criteria_id}/questions`);
+        const questionsWithCriteria = questionsRes.data.map(q => ({
+          ...q,
+          criteria_name: criteria.criteria_name
+        }));
+        allQuestions.push(...questionsWithCriteria);
+      }
+
+      setQuestions(allQuestions);
+    } catch (err) {
+      console.error('Lỗi khi lấy form/tiêu chí/câu hỏi:', err);
+      setCriterias([]);
+      setQuestions([]);
+    }
+  };
+
+  const handleCycleChange = (e) => {
+    const cycleId = e.target.value;
+    setSelectedCycle(cycleId);
+    if (cycleId) {
+      fetchFormAndQuestions(cycleId);
+    } else {
+      setCriteriaForm(null);
+      setCriterias([]);
+      setQuestions([]);
+    }
+  };
+
+  const handleScoreChange = (questionId, value) => {
+    setScores({
+      ...scores,
+      [questionId]: value
+    });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        evaluation_cycle_id: selectedCycle,
+        employee_code: profile.code,
+        answers: questions.map(q => ({
+          question_id: q.question_id,
+          employee_score: scores[q.question_id] || 0
+        }))
+      };
+
+      await axiosInstance.post('/evaluation-answer-details', payload);
+      alert('Lưu đánh giá thành công!');
+    } catch (error) {
+      console.error('Lỗi khi lưu đánh giá:', error);
+      alert('Có lỗi xảy ra khi lưu đánh giá!');
+    }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Tự đánh giá</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <table className="table">
-        <thead>
+    <MainLayout>
+      <div className="mb-3">
+        <label>Chọn chu kỳ đánh giá:</label>
+        <select
+          className="form-control"
+          value={selectedCycle}
+          onChange={handleCycleChange}
+        >
+          <option value="">-- Chọn chu kỳ --</option>
+          {evaluationCycles.map((cycle) => (
+            <option key={cycle.evaluation_cycle_id} value={cycle.evaluation_cycle_id}>
+              {cycle.cycle_name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <table className="table table-bordered">
+        <thead className="thead-dark">
           <tr>
             <th>Nội dung</th>
             <th>Điểm tối đa</th>
             <th>Nhân viên</th>
             <th>Quản lý</th>
-            <th>Supervisor</th>
+            <th>Thống đốc</th>
             <th>Giám đốc</th>
           </tr>
         </thead>
         <tbody>
-          {assessmentData.map((item, index) => (
-            <tr key={index}>
-              <td>{item.content}</td>
-              <td>{item.max_score}</td>
-              <td>
-                {employeeRole === 'employee' ? (
-                  <input
-                    type="number"
-                    value={item.employee_score || ''}
-                    onChange={(e) => handleInputChange(index, 'employee_score', e.target.value)}
-                    className="form-control"
-                    disabled={employeeRole !== 'employee'}
-                  />
-                ) : null}
-              </td>
-              <td>
-                {employeeRole === 'manager' ? (
-                  <input
-                    type="number"
-                    value={item.manager_score || ''}
-                    onChange={(e) => handleInputChange(index, 'manager_score', e.target.value)}
-                    className="form-control"
-                    disabled={employeeRole !== 'manager'}
-                  />
-                ) : null}
-              </td>
-              <td>
-                {employeeRole === 'supervisor' ? (
-                  <input
-                    type="number"
-                    value={item.supervisor_score || ''}
-                    onChange={(e) => handleInputChange(index, 'supervisor_score', e.target.value)}
-                    className="form-control"
-                    disabled={employeeRole !== 'supervisor'}
-                  />
-                ) : null}
-              </td>
-              <td>
-                {employeeRole === 'director' ? (
-                  <input
-                    type="number"
-                    value={item.director_score || ''}
-                    onChange={(e) => handleInputChange(index, 'director_score', e.target.value)}
-                    className="form-control"
-                    disabled={employeeRole !== 'director'}
-                  />
-                ) : null}
-              </td>
-            </tr>
-          ))}
+          {criterias.map((criteria) => {
+            const relatedQuestions = questions.filter(
+              (q) => q.evaluation_criteria_id === criteria.evaluation_criteria_id
+            );
+
+            return (
+              <React.Fragment key={criteria.evaluation_criteria_id}>
+                <tr className="table-secondary">
+                  <td colSpan="6">
+                    <strong>Tiêu chí: {criteria.criteria_name}</strong>
+                  </td>
+                </tr>
+                {relatedQuestions.map((q) => (
+                  <tr key={q.question_id}>
+                    <td>{q.question_name}</td>
+                    <td>{q.max_score}</td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-control"
+                        min="0"
+                        max={q.max_score}
+                        value={scores[q.question_id] || ''}
+                        onChange={(e) => handleScoreChange(q.question_id, e.target.value)}
+                      />
+                    </td>
+                    <td><input className="form-control" disabled value="" /></td>
+                    <td><input className="form-control" disabled value="" /></td>
+                    <td><input className="form-control" disabled value="" /></td>
+                  </tr>
+                ))}
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
-      <button className="btn btn-primary" onClick={handleSave}>Lưu</button>
-    </div>
+
+      {questions.length > 0 && (
+        <button className="btn btn-success" onClick={handleSubmit}>
+          Lưu đánh giá
+        </button>
+      )}
+    </MainLayout>
   );
 }
-export default SelfAssessment;
+
+export default EmployeeSelfEvaluation;
