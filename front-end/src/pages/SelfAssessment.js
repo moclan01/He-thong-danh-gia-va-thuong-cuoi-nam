@@ -3,13 +3,38 @@ import MainLayout from './MainLayout';
 import axiosInstance from '../services/axiosInstance';
 
 function EmployeeSelfEvaluation() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const role = user?.role;
+
   const [profile, setProfile] = useState({});
   const [evaluationCycles, setEvaluationCycles] = useState([]);
   const [selectedCycle, setSelectedCycle] = useState('');
   const [criteriaForm, setCriteriaForm] = useState(null);
   const [criterias, setCriterias] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const [scores, setScores] = useState({}); // lưu điểm theo question_id
+  const [scores, setScores] = useState({});
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      setScores(prevScores => {
+        const newScores = { ...prevScores };
+        questions.forEach(q => {
+          if (newScores[q.evaluation_question_id] === undefined) {
+            newScores[q.evaluation_question_id] = 0;
+          }
+        });
+        return newScores;
+      });
+    }
+  }, [questions]);
+
+  useEffect(() => {
+    const questionIds = questions.map(q => q.evaluation_question_id);
+    const uniqueIds = new Set(questionIds);
+    if (questionIds.length !== uniqueIds.size) {
+      console.error('Duplicate evaluation_question_id found:', questionIds);
+    }
+  }, [questions]);
 
   useEffect(() => {
     fetchProfileAndCycles();
@@ -39,12 +64,20 @@ function EmployeeSelfEvaluation() {
       setCriterias(criteriaList);
 
       const allQuestions = [];
+
       for (const criteria of criteriaList) {
-        const questionsRes = await axiosInstance.get(`/evaluation-criterias/${criteria.evaluation_criteria_id}/questions`);
-        const questionsWithCriteria = questionsRes.data.map(q => ({
-          ...q,
+        const questionsRes = await axiosInstance.get(
+          `/evaluation-criterias/${criteria.evaluation_criteria_id}/questions`
+        );
+
+        const questionsWithCriteria = questionsRes.data.map((q) => ({
+          evaluation_question_id: q.evaluation_question_id,
+          evaluation_criteria_id: q.evaluation_criteria_id,
+          question_name: q.question_name,
+          max_score: q.max_score,
           criteria_name: criteria.criteria_name
         }));
+
         allQuestions.push(...questionsWithCriteria);
       }
 
@@ -65,34 +98,55 @@ function EmployeeSelfEvaluation() {
       setCriteriaForm(null);
       setCriterias([]);
       setQuestions([]);
+      setScores({});
     }
   };
 
   const handleScoreChange = (questionId, value) => {
-    setScores({
-      ...scores,
-      [questionId]: value
+    let numValue = value === '' ? 0 : parseInt(value, 10);
+    if (isNaN(numValue) || numValue < 0) numValue = 0;
+
+    setScores(prevScores => {
+      const newScores = {
+        ...prevScores,
+        [questionId]: numValue,
+      };
+      console.log('Updated scores:', newScores);
+      return newScores;
     });
   };
 
   const handleSubmit = async () => {
     try {
-      const payload = {
-        evaluation_cycle_id: selectedCycle,
-        employee_code: profile.code,
-        answers: questions.map(q => ({
-          question_id: q.question_id,
-          employee_score: scores[q.question_id] || 0
-        }))
-      };
+      const totalScore = questions.reduce((sum, q) => {
+        return sum + Number(scores[q.evaluation_question_id] || 0);
+      }, 0);
 
-      await axiosInstance.post('/evaluation-answer-details', payload);
+      const answerRes = await axiosInstance.post('/evaluation-answers', {
+        employee_code: profile.code,
+        criteria_form_id: criteriaForm.criteria_form_id,
+        total_score: totalScore
+      });
+
+      const evaluationAnswerId = answerRes.data.evaluation_answer_id;
+
+      const batchData = questions.map((q) => ({
+        evaluation_question_id: q.evaluation_question_id,
+        evaluation_answer_id: evaluationAnswerId,
+        employee_score: parseInt(scores[q.evaluation_question_id] || 0, 10),
+      }));
+
+      await axiosInstance.post('/evaluation-answer-details/employee/batch', {
+        data: batchData,
+      });
+
       alert('Lưu đánh giá thành công!');
     } catch (error) {
       console.error('Lỗi khi lưu đánh giá:', error);
       alert('Có lỗi xảy ra khi lưu đánh giá!');
     }
   };
+
 
   return (
     <MainLayout>
@@ -120,7 +174,6 @@ function EmployeeSelfEvaluation() {
             <th>Nhân viên</th>
             <th>Quản lý</th>
             <th>Thống đốc</th>
-            <th>Giám đốc</th>
           </tr>
         </thead>
         <tbody>
@@ -137,7 +190,7 @@ function EmployeeSelfEvaluation() {
                   </td>
                 </tr>
                 {relatedQuestions.map((q) => (
-                  <tr key={q.question_id}>
+                  <tr key={q.evaluation_question_id}>
                     <td>{q.question_name}</td>
                     <td>{q.max_score}</td>
                     <td>
@@ -146,11 +199,13 @@ function EmployeeSelfEvaluation() {
                         className="form-control"
                         min="0"
                         max={q.max_score}
-                        value={scores[q.question_id] || ''}
-                        onChange={(e) => handleScoreChange(q.question_id, e.target.value)}
+                        value={scores[q.evaluation_question_id] || 0}
+                        onChange={(e) =>
+                          handleScoreChange(q.evaluation_question_id, e.target.value)
+                        }
+                        disabled={role !== 'employee'}
                       />
                     </td>
-                    <td><input className="form-control" disabled value="" /></td>
                     <td><input className="form-control" disabled value="" /></td>
                     <td><input className="form-control" disabled value="" /></td>
                   </tr>
