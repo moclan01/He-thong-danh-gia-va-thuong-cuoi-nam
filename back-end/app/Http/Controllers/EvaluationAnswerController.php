@@ -73,5 +73,16 @@ class EvaluationAnswerController extends Controller
         return response()->json(['message' => 'Evaluation Answer deleted successfully']);
     }
 
-    
+    public function getByCode($code)
+    {
+        $evaluationAnswers = $this->evaluationAnswerRepository->getByCode($code);
+
+        if ($evaluationAnswers->isEmpty()) {
+            return response()->json(['message' => 'No Evaluation Answers found for this employee code'], 404);
+        }
+
+        return response()->json($evaluationAnswers);
+    }
+
+
 }

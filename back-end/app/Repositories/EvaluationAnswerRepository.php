@@ -5,11 +5,12 @@ namespace App\Repositories;
 use App\Models\EvaluationAnswer;
 use App\Repositories\Interfaces\IEvaluationAnswerRepository;
 
-class EvaluationAnswerRepository implements IEvaluationAnswerRepository{
+class EvaluationAnswerRepository implements IEvaluationAnswerRepository
+{
     public function getAll()
     {
         return EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])->get();
-    
+
     }
 
     public function getById($id)
@@ -44,14 +45,10 @@ class EvaluationAnswerRepository implements IEvaluationAnswerRepository{
         return false;
     }
 
-    public function recalculateTotalScore($id)
+    public function getByCode(string $code)
     {
-        $answer = EvaluationAnswer::with('evaluationAnswerDetails')->find($id);
-        if (!$answer) return null;
-
-        $total = $answer->evaluationAnswerDetails->sum('score');
-        $answer->update(['total_score' => $total]);
-
-        return $answer;
+        return EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])
+            ->where('code', $code)
+            ->get();
     }
 }
