@@ -37,4 +37,6 @@ class EvaluationAnswerDetail extends Model
     {
         return $this->belongsTo(EvaluationAnswer::class, 'evaluation_answer_id', 'evaluation_answer_id');
     }
+
+
 }

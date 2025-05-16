@@ -38,4 +38,6 @@ class EvaluationAnswer extends Model
     {
         return $this->hasMany(EvaluationAnswerDetail::class, 'evaluation_answer_id', 'evaluation_answer_id');
     }
+
+    
 }

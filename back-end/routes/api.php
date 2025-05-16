@@ -122,6 +122,7 @@ Route::prefix('evaluation-answers')->group(function () {
     Route::get('/employee/{code}', [EvaluationAnswerController::class, 'getByCode']);
     Route::put('/{id}/update-manage-score', [EvaluationAnswerController::class, 'updateTotalScoreManage']);
     Route::put('/{id}/update-supervisor-score', [EvaluationAnswerController::class, 'updateTotalScoreSupervisor']);
+    Route::get('/by-code-and-form-id/{code}/{formId}', [EvaluationAnswerController::class, 'getByCodeAndFormId']);
 });
 
 Route::prefix('evaluation-answer-details')->group(function () {

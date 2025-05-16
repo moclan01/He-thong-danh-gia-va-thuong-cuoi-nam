@@ -9,20 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('evaluation_answer_details', function (Blueprint $table) {
-            $table->id('evaluation_answer_detail_id')->primary();
-            $table->foreignId('evaluation_question_id');
-            $table->foreignId('evaluation_answer_id');
-            $table->integer('score')->nullable();
-            $table->integer('employee_score')->nullable();
-            $table->integer('manager_score')->nullable();
-            $table->integer('supervisor_score')->nullable();
-            $table->integer('director_score')->nullable();
-            $table->timestamps();
-        });
-    }
+        public function up(): void
+        {
+            Schema::create('evaluation_answer_details', function (Blueprint $table) {
+                $table->id('evaluation_answer_detail_id')->primary();
+                $table->foreignId('evaluation_question_id');
+                $table->foreignId('evaluation_answer_id');
+                $table->integer('score')->nullable();
+                $table->integer('employee_score')->nullable();
+                $table->integer('manager_score')->nullable();
+                $table->integer('supervisor_score')->nullable();
+                $table->integer('director_score')->nullable();
+                $table->timestamps();
+            });
+        }
 
     /**
      * Reverse the migrations.

@@ -116,20 +116,6 @@ class EvaluationAnswerDetailController extends Controller
 
         return response()->json($evaluationAnswerDetail);
     }
-    public function updateDirectorScore(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'director_score' => 'required|integer|min:0|max:120',
-        ]);
-
-        $evaluationAnswerDetail = $this->evaluationAnswerDetailRepository->update($id, $validated);
-
-        if (!$evaluationAnswerDetail) {
-            return response()->json(['message' => 'Evaluation Answer Detail not found'], 404);
-        }
-
-        return response()->json($evaluationAnswerDetail);
-    }
 
     public function storeByEmployeeBatch(Request $request)
     {
@@ -153,14 +139,14 @@ class EvaluationAnswerDetailController extends Controller
     {
         $validated = $request->validate([
             'data' => 'required|array',
-            'data.*.id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
+            'data.*.evaluation_answer_detail_id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
             'data.*.manager_score' => 'required|integer|min:0|max:120',
         ]);
 
         $updated = [];
 
         foreach ($validated['data'] as $item) {
-            $updated[] = $this->evaluationAnswerDetailRepository->update($item['id'], [
+            $updated[] = $this->evaluationAnswerDetailRepository->update($item['evaluation_answer_detail_id'], [
                 'manager_score' => $item['manager_score'],
             ]);
         }
@@ -171,36 +157,19 @@ class EvaluationAnswerDetailController extends Controller
     {
         $validated = $request->validate([
             'data' => 'required|array',
-            'data.*.id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
+            'data.*.evaluation_answer_detail_id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
             'data.*.supervisor_score' => 'required|integer|min:0|max:120',
         ]);
 
         $updated = [];
 
         foreach ($validated['data'] as $item) {
-            $updated[] = $this->evaluationAnswerDetailRepository->update($item['id'], [
+            $updated[] = $this->evaluationAnswerDetailRepository->update($item['evaluation_answer_detail_id'], [
                 'supervisor_score' => $item['supervisor_score'],
             ]);
         }
 
         return response()->json($updated);
     }
-    public function updateDirectorScoresBatch(Request $request)
-    {
-        $validated = $request->validate([
-            'data' => 'required|array',
-            'data.*.id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
-            'data.*.director_score' => 'required|integer|min:0|max:120',
-        ]);
-
-        $updated = [];
-
-        foreach ($validated['data'] as $item) {
-            $updated[] = $this->evaluationAnswerDetailRepository->update($item['id'], [
-                'director_score' => $item['director_score'],
-            ]);
-        }
-
-        return response()->json($updated);
-    }
+    
 }

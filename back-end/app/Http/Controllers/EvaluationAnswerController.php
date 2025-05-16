@@ -118,4 +118,30 @@ class EvaluationAnswerController extends Controller
 
         return response()->json(['message' => 'Supervisor score updated successfully', 'data' => $evaluationAnswer]);
     }
+
+    public function getByCodeAndFormId($code, $formId)
+    {
+        $evaluationAnswer = EvaluationAnswer::where('code', $code)
+            ->where('criteria_form_id', $formId)
+            ->first();
+
+        if (!$evaluationAnswer) {
+            return response()->json(['message' => 'Evaluation Answer not found'], 404);
+        }
+
+        return response()->json($evaluationAnswer);
+    }
+
+    public function showWithDetails($id)
+    {
+        $evaluationAnswer = EvaluationAnswer::with('evaluationAnswerDetails')
+            ->where('evaluation_answer_id', $id)
+            ->first();
+
+        if (!$evaluationAnswer) {
+            return response()->json(['message' => 'Evaluation Answer not found'], 404);
+        }
+
+        return response()->json($evaluationAnswer);
+    }
 }
