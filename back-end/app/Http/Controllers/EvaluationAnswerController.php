@@ -84,5 +84,38 @@ class EvaluationAnswerController extends Controller
         return response()->json($evaluationAnswers);
     }
 
+    public function updateTotalScoreManage(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'total_score_manage' => 'required|integer|min:0',
+        ]);
 
+        $evaluationAnswer = $this->evaluationAnswerRepository->getById($id);
+
+        if (!$evaluationAnswer) {
+            return response()->json(['message' => 'Evaluation Answer not found'], 404);
+        }
+
+        $evaluationAnswer->total_score_manage = $validated['total_score_manage'];
+        $evaluationAnswer->save();
+
+        return response()->json(['message' => 'Manager score updated successfully', 'data' => $evaluationAnswer]);
+    }
+    public function updateTotalScoreSupervisor(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'total_score_supervisor' => 'required|integer|min:0',
+        ]);
+
+        $evaluationAnswer = $this->evaluationAnswerRepository->getById($id);
+
+        if (!$evaluationAnswer) {
+            return response()->json(['message' => 'Evaluation Answer not found'], 404);
+        }
+
+        $evaluationAnswer->total_score_supervisor = $validated['total_score_supervisor'];
+        $evaluationAnswer->save();
+
+        return response()->json(['message' => 'Supervisor score updated successfully', 'data' => $evaluationAnswer]);
+    }
 }

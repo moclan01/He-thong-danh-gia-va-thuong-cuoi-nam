@@ -9,10 +9,19 @@ class EvaluationAnswer extends Model
     protected $primaryKey = 'evaluation_answer_id';
     protected $keyType = 'int';
     public $incrementing = true;
-    protected $fillable = ['code', 'criteria_form_id', 'total_score'];
+    protected $fillable = [
+        'code',
+        'criteria_form_id',
+        'total_score',
+        'total_score_manage',
+        'total_score_supervisor',
+    ];
 
     protected $casts = [
         'criteria_form_id' => 'integer',
+        'total_score' => 'integer',
+        'total_score_manage' => 'integer',
+        'total_score_supervisor' => 'integer',
     ];
 
     public function employee()

@@ -120,6 +120,8 @@ Route::prefix('evaluation-answers')->group(function () {
     Route::delete('/{id}', [EvaluationAnswerController::class, 'destroy']);
     Route::get('/{id}/details', [EvaluationAnswerController::class, 'showWithDetails']);
     Route::get('/employee/{code}', [EvaluationAnswerController::class, 'getByCode']);
+    Route::put('/{id}/update-manage-score', [EvaluationAnswerController::class, 'updateTotalScoreManage']);
+    Route::put('/{id}/update-supervisor-score', [EvaluationAnswerController::class, 'updateTotalScoreSupervisor']);
 });
 
 Route::prefix('evaluation-answer-details')->group(function () {
