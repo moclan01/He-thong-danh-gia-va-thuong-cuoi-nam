@@ -114,16 +114,6 @@ function ManagerEvaluateEmployee() {
             setEmployeeScores(newEmployeeScores);
             console.log(newEmployeeScores)
 
-            // Map điểm manager_score cho editable input
-            // setScores(prevScores => {
-            //     const newScores = { ...prevScores };
-            //     details.forEach(detail => {
-            //         if (newScores[detail.evaluation_question_id] === undefined) {
-            //             newScores[detail.evaluation_question_id] = detail.manager_score || 0;
-            //         }
-            //     });
-            //     return newScores;
-            // });
         } catch (error) {
             console.error('Lỗi khi lấy EvaluationAnswer hoặc chi tiết:');
 
@@ -140,7 +130,7 @@ function ManagerEvaluateEmployee() {
             setEvaluationAnswerId(null);
             setAnswerDetails([]);
             setEmployeeScores({});
-            setScores({});  
+            setScores({});
         }
     };
 
@@ -171,6 +161,45 @@ function ManagerEvaluateEmployee() {
             console.log('Updated scores:', newScores);
             return newScores;
         });
+    };
+
+    const handleSubmit = async () => {
+        try {
+            if (role !== 'manager') {
+                alert('Bạn không có quyền thực hiện hành động này.');
+                return;
+            }
+
+            const totalScore = questions.reduce((sum, q) => {
+                return sum + Number(scores[q.evaluation_question_id] || 0);
+            }, 0);
+
+            // Gửi đánh giá tổng trước
+            const answerRes = await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}/update-manage-score`, {
+                evaluation_answer_id: evaluationAnswerId,
+                total_score_manage: totalScore
+            });
+
+            const batchData = answerDetails.map((detail) => ({
+                evaluation_answer_detail_id: detail.evaluation_answer_detail_id,
+                manager_score: parseInt(scores[detail.evaluation_question_id] || 0, 10),
+            }))
+
+            const detailRes = await axiosInstance.put('/evaluation-answer-details/manager/batch', {
+                data: batchData
+            });
+
+            console.log('Kết quả lưu chi tiết:', detailRes.data);
+            alert('Lưu đánh giá thành công!');
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+                console.error('Lỗi xác thực (validation):', error.response.data.errors);
+                alert('Dữ liệu không hợp lệ: ' + JSON.stringify(error.response.data.errors));
+            } else {
+                console.error('Lỗi khi lưu đánh giá:', error);
+                alert('Có lỗi xảy ra khi lưu đánh giá!');
+            }
+        }
     };
 
     return (
@@ -225,7 +254,7 @@ function ManagerEvaluateEmployee() {
                                             <input
                                                 className="form-control"
                                                 disabled
-                                                value={employeeScores[q.evaluation_question_id] ?? 0} 
+                                                value={employeeScores[q.evaluation_question_id] ?? 0}
                                             />
                                         </td>
                                         <td>
@@ -250,7 +279,7 @@ function ManagerEvaluateEmployee() {
             </table>
 
             {questions.length > 0 && (
-                <button className="btn btn-success" >
+                <button className="btn btn-success" onClick={handleSubmit}>
                     Lưu đánh giá
                 </button>
             )}
