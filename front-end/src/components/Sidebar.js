@@ -31,13 +31,8 @@ export default function Sidebar() {
                     </button>
                 </li>
                 <li className="nav-item mb-2">
-                    <button className="btn btn-link text-white nav-link" onClick={() => navigate('/evaluation-results')}>
-                        Xem kết quả đánh giá
-                    </button>
-                </li>
-                <li className="nav-item mb-2">
                     <button className="btn btn-link text-white nav-link" onClick={() => navigate('/evaluation-history')}>
-                        Lịch sử đánh giá
+                        Lịch sử và kết quả đánh giá
                     </button>
                 </li>
                 {(role === 'manager' || role === 'supervisor') && (

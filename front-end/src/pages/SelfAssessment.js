@@ -46,6 +46,7 @@ function EmployeeSelfEvaluation() {
       setProfile(res.data);
 
       const code = res.data.code;
+      console.log(code)
       const cycleRes = await axiosInstance.get(`/employees/${code}/evaluation-cycles`);
       setEvaluationCycles(cycleRes.data);
     } catch (error) {
@@ -116,37 +117,52 @@ function EmployeeSelfEvaluation() {
     });
   };
 
+
   const handleSubmit = async () => {
     try {
+      if (role !== 'employee') {
+        alert('Bạn không có quyền thực hiện hành động này.');
+        return;
+      }
+
       const totalScore = questions.reduce((sum, q) => {
         return sum + Number(scores[q.evaluation_question_id] || 0);
       }, 0);
 
+      // Gửi đánh giá tổng trước
       const answerRes = await axiosInstance.post('/evaluation-answers', {
-        employee_code: profile.code,
+        code: profile.code,
         criteria_form_id: criteriaForm.criteria_form_id,
         total_score: totalScore
       });
 
+
       const evaluationAnswerId = answerRes.data.evaluation_answer_id;
 
+      // Chuẩn bị chi tiết điểm
       const batchData = questions.map((q) => ({
         evaluation_question_id: q.evaluation_question_id,
         evaluation_answer_id: evaluationAnswerId,
         employee_score: parseInt(scores[q.evaluation_question_id] || 0, 10),
       }));
 
-      await axiosInstance.post('/evaluation-answer-details/employee/batch', {
-        data: batchData,
+      // Gửi batch điểm chi tiết
+      const detailRes = await axiosInstance.post('/evaluation-answer-details/employee/batch', {
+        data: batchData
       });
 
+      console.log('Kết quả lưu chi tiết:', detailRes.data);
       alert('Lưu đánh giá thành công!');
     } catch (error) {
-      console.error('Lỗi khi lưu đánh giá:', error);
-      alert('Có lỗi xảy ra khi lưu đánh giá!');
+      if (error.response && error.response.status === 422) {
+        console.error('Lỗi xác thực (validation):', error.response.data.errors);
+        alert('Dữ liệu không hợp lệ: ' + JSON.stringify(error.response.data.errors));
+      } else {
+        console.error('Lỗi khi lưu đánh giá:', error);
+        alert('Có lỗi xảy ra khi lưu đánh giá!');
+      }
     }
   };
-
 
   return (
     <MainLayout>

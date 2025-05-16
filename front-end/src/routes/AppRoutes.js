@@ -18,6 +18,7 @@ import CriteriaFormManage from '../pages/evaluation/EvaluationFormManage';
 import AddForm from '../pages/evaluation/AddForm';
 import CriteriaFormDetail from '../pages/evaluation/CriteriaFormDetail';
 import EmployeeSelfEvaluation from '../pages/SelfAssessment';
+import EvaluationHistory from '../pages/EvaluationHistory';
 
 
 export default function AppRoute() {
@@ -43,6 +44,7 @@ export default function AppRoute() {
         <Route path='/form/add' element={<AddForm />} />
         <Route path='/form-management/detail/:formId' element={<CriteriaFormDetail />} />
         <Route path='/self-assessment' element={<EmployeeSelfEvaluation />} />
+        <Route path='/evaluation-history' element={<EvaluationHistory />} />
 
         {/* Thêm các route khác ở đây */}
       </Routes>
