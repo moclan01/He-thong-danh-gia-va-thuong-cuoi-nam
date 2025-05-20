@@ -10,28 +10,13 @@ function EmployeesEvaluationManagement() {
     const role = user?.role;
 
     const [profile, setProfile] = useState({});
-    const [evaluationCycles, setEvaluationCycles] = useState([]);
     const [managedEmployees, setManagedEmployees] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchProfileAndManagedEmployees();
-        fetchProfileAndCycles();
+        
     }, []);
-
-    const fetchProfileAndCycles = async () => {
-        try {
-            const res = await axiosInstance.get('/employee/profile');
-            setProfile(res.data);
-
-            const code = res.data.code;
-            console.log(code)
-            const cycleRes = await axiosInstance.get(`/employees/${code}/evaluation-cycles`);
-            setEvaluationCycles(cycleRes.data);
-        } catch (error) {
-            console.error('Lỗi khi lấy hồ sơ hoặc chu kỳ:', error);
-        }
-    };
 
     const fetchProfileAndManagedEmployees = async () => {
         try {

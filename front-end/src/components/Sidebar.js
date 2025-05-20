@@ -35,23 +35,34 @@ export default function Sidebar() {
                         Lịch sử và kết quả đánh giá
                     </button>
                 </li>
-                {(role === 'manager' || role === 'supervisor') && (
+                {(role === 'manager') && (
                     <>
                         <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/group-assessment')}>
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/group-assessment-manager')}>
                                 Quản lý đánh giá tập thể
                             </button>
                         </li>
                         <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/peer-assessment')}>
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/peer-assessment-manager')}>
                                 Đánh giá đồng cấp
                             </button>
                         </li>
                     </>
                 )}
+
                 {/* Supervisor-specific */}
                 {role === 'supervisor' && (
                     <>
+                        <li className="nav-item mb-2">
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/group-assessment-supervisor')}>
+                                Quản lý đánh giá tập thể
+                            </button>
+                        </li>
+                        <li className="nav-item mb-2">
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/peer-assessment-supervisor')}>
+                                Đánh giá đồng cấp
+                            </button>
+                        </li>
                         <li className="nav-item mb-2">
                             <button className="btn btn-link text-white nav-link" onClick={() => navigate('/evaluate-managers')}>
                                 Đánh giá quản lý
@@ -69,7 +80,7 @@ export default function Sidebar() {
                         </li>
                     </>
                 )}
-                
+
                 {role === 'hr' && (
                     <>
                         <li className="nav-item mb-2">

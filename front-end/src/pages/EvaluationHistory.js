@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import MainLayout from './MainLayout';
 import axiosInstance from '../services/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 function EvaluationHistory() {
-    const user = JSON.parse(localStorage.getItem('user'));
     const [profile, setProfile] = useState({});
-    const [evaluationCycles, setEvaluationCycles] = useState([]);
-    const [criteriaForms, setCriteriaForms] = useState([]);
-    const [evaluationAnswers, setEvaluationAnswers] = useState([]);
     const [historyList, setHistoryList] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchAllData();
@@ -16,7 +14,6 @@ function EvaluationHistory() {
 
     const fetchAllData = async () => {
         try {
-            // 1. Lấy profile
             const profileRes = await axiosInstance.get('/employee/profile');
             const profileData = profileRes.data;
             setProfile(profileData);
@@ -24,46 +21,40 @@ function EvaluationHistory() {
             const code = profileData.code;
 
             const answersRes = await axiosInstance.get(`/evaluation-answers/employee/${code}`);
-            setEvaluationAnswers(answersRes.data);
+            const evaluationAnswers = answersRes.data;
 
-            // 2. Lấy danh sách chu kỳ đánh giá của nhân viên
             const cyclesRes = await axiosInstance.get(`/employees/${code}/evaluation-cycles`);
-            setEvaluationCycles(cyclesRes.data);
+            const evaluationCycles = cyclesRes.data;
 
-            // 3. Lấy tất cả form đánh giá
             const formsRes = await axiosInstance.get('/criteria-forms');
-            setCriteriaForms(formsRes.data);
+            const criteriaForms = formsRes.data;
 
-            // 5. Xử lý ghép dữ liệu lịch sử đánh giá
-            const history = [];
-
-            // Với mỗi chu kỳ, tìm form liên quan, sau đó tìm câu trả lời tương ứng
-            evaluationCycles.forEach(cycle => {
-                // Tìm tất cả các answer có form thuộc chu kỳ hiện tại
-                // Lọc answers sao cho form của answer có evaluation_cycle_id = cycle.evaluation_cycle_id
-
-                // Lấy các form của chu kỳ này
+            const history = evaluationCycles.map(cycle => {
                 const formsOfCycle = criteriaForms.filter(form => form.evaluation_cycle_id === cycle.evaluation_cycle_id);
 
-                // Tìm các answer có criteria_form_id thuộc formsOfCycle
                 const answersInCycle = evaluationAnswers.filter(answer =>
                     formsOfCycle.some(form => form.criteria_form_id === answer.criteria_form_id)
                 );
 
-                // Tổng điểm = tổng hoặc trung bình tổng_score của tất cả answers trong chu kỳ
-                // (Tuỳ logic bạn muốn, mình sẽ lấy tổng điểm lớn nhất làm điểm đại diện)
                 let totalScore = 'Chưa có đánh giá';
+                let totalScoreManage = 'Chưa có đánh giá';
+                let totalScoreSupervisor = 'Chưa có đánh giá';
+
                 if (answersInCycle.length > 0) {
-                    // Lấy điểm max
-                    totalScore = Math.max(...answersInCycle.map(a => a.total_score));
+                    totalScore = Math.max(...answersInCycle.map(a => a.total_score ?? 0));
+                    totalScoreManage = Math.max(...answersInCycle.map(a => a.total_score_manage ?? 0));
+                    totalScoreSupervisor = Math.max(...answersInCycle.map(a => a.total_score_supervisor ?? 0));
                 }
 
-                history.push({
+                return {
                     cycle_name: cycle.cycle_name,
                     start_date: cycle.start_date,
                     end_date: cycle.end_date,
                     total_score: totalScore,
-                });
+                    total_score_manage: totalScoreManage,
+                    total_score_supervisor: totalScoreSupervisor,
+                    cycle_id: cycle.evaluation_cycle_id,
+                };
             });
 
             setHistoryList(history);
@@ -74,32 +65,47 @@ function EvaluationHistory() {
 
     return (
         <MainLayout>
-            <h3>Lịch sử đánh giá của nhân viên: {profile.name}</h3>
-            <table className="table table-bordered mt-3">
-                <thead>
-                    <tr>
-                        <th>Chu kỳ đánh giá</th>
-                        <th>Ngày bắt đầu</th>
-                        <th>Ngày kết thúc</th>
-                        <th>Tổng điểm</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {historyList.length === 0 && (
+            <div className="container mt-4">
+                <h3 className="mb-4">Lịch sử đánh giá của nhân viên: {profile.name}</h3>
+
+                <table className="table table-bordered table-striped">
+                    <thead className="thead-dark">
                         <tr>
-                            <td colSpan="4" className="text-center">Chưa có dữ liệu lịch sử đánh giá</td>
+                            <th>Chu kỳ đánh giá</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Ngày kết thúc</th>
+                            <th>Điểm tự đánh giá</th>
+                            <th>Điểm quản lý đánh giá</th>
+                            <th>Điểm thống đốc đánh giá</th>
                         </tr>
-                    )}
-                    {historyList.map((item, idx) => (
-                        <tr key={idx}>
-                            <td>{item.cycle_name}</td>
-                            <td>{item.start_date}</td>
-                            <td>{item.end_date}</td>
-                            <td>{item.total_score}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {historyList.length === 0 ? (
+                            <tr>
+                                <td colSpan="6" className="text-center">
+                                    Chưa có dữ liệu lịch sử đánh giá
+                                </td>
+                            </tr>
+                        ) : (
+                            historyList.map((item, idx) => (
+                                <tr key={idx}>
+                                    <td>{item.cycle_name}</td>
+                                    <td>{item.start_date}</td>
+                                    <td>{item.end_date}</td>
+                                    <td>{item.total_score}</td>
+                                    <td>{item.total_score_manage}</td>
+                                    <td>{item.total_score_supervisor}</td>
+                                    <td>
+                                        <button className="btn btn-primary btn-sm" onClick={() => navigate(`/evaluation-detail/${profile.code}/${item.cycle_id}`)}>
+                                            Xem chi tiết
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </MainLayout>
     );
 }

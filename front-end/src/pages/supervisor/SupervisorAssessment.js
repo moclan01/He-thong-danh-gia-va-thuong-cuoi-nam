@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import MainLayout from '../MainLayout';
 import axiosInstance from '../../services/axiosInstance';
 
-function ManagerEvaluateEmployee() {
+function SupervisorEvaluateEmployee() {
     const user = JSON.parse(localStorage.getItem('user'));
     const role = user?.role;
     const { code } = useParams();
@@ -16,6 +16,7 @@ function ManagerEvaluateEmployee() {
     const [evaluationAnswerId, setEvaluationAnswerId] = useState(null);
     const [answerDetails, setAnswerDetails] = useState([]);
     const [employeeScores, setEmployeeScores] = useState({});
+    const [managerScores, setManagerScores] = useState({});
 
     useEffect(() => {
         if (questions.length > 0) {
@@ -106,14 +107,17 @@ function ManagerEvaluateEmployee() {
             setAnswerDetails(details);
             console.log(details)
 
-            // Map điểm employee_score theo evaluation_question_id
+            // Map điểm employee_score, manager_score theo evaluation_question_id
             const newEmployeeScores = {};
+            const newManagerScores = {};
             details.forEach(detail => {
                 newEmployeeScores[detail.evaluation_question_id] = detail.employee_score;
+                newManagerScores[detail.evaluation_question_id] = detail.manager_score;
             });
             setEmployeeScores(newEmployeeScores);
+            setManagerScores(newManagerScores);
             console.log(newEmployeeScores)
-
+            console.log('Manager scores:', newManagerScores);
         } catch (error) {
             console.error('Lỗi khi lấy EvaluationAnswer hoặc chi tiết:');
 
@@ -130,6 +134,7 @@ function ManagerEvaluateEmployee() {
             setEvaluationAnswerId(null);
             setAnswerDetails([]);
             setEmployeeScores({});
+            setManagerScores({});
             setScores({});
         }
     };
@@ -165,7 +170,7 @@ function ManagerEvaluateEmployee() {
 
     const handleSubmit = async () => {
         try {
-            if (role !== 'manager') {
+            if (role !== 'supervisor') {
                 alert('Bạn không có quyền thực hiện hành động này.');
                 return;
             }
@@ -175,17 +180,17 @@ function ManagerEvaluateEmployee() {
             }, 0);
 
             // Gửi đánh giá tổng trước
-            const answerRes = await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}/update-manage-score`, {
+            const answerRes = await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}/update-supervisor-score`, {
                 evaluation_answer_id: evaluationAnswerId,
-                total_score_manage: totalScore
+                total_score_supervisor: totalScore
             });
 
             const batchData = answerDetails.map((detail) => ({
                 evaluation_answer_detail_id: detail.evaluation_answer_detail_id,
-                manager_score: parseInt(scores[detail.evaluation_question_id] || 0, 10),
+                supervisor_score: parseInt(scores[detail.evaluation_question_id] || 0, 10),
             }))
 
-            const detailRes = await axiosInstance.put('/evaluation-answer-details/manager/batch', {
+            const detailRes = await axiosInstance.put('/evaluation-answer-details/supervisor/batch', {
                 data: batchData
             });
 
@@ -259,17 +264,24 @@ function ManagerEvaluateEmployee() {
                                         </td>
                                         <td>
                                             <input
+                                                className="form-control"
+                                                disabled
+                                                value={managerScores[q.evaluation_question_id] ?? 0}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
                                                 type="number"
                                                 className="form-control"
                                                 min="0"
                                                 max={q.max_score}
-                                                value={scores[q.evaluation_question_id] || 0}
+                                                value={scores[q.evaluation_question_id] ?? 0}
                                                 onChange={(e) =>
                                                     handleScoreChange(q.evaluation_question_id, e.target.value, q.max_score)
                                                 }
-                                                disabled={role !== 'manager'}
-                                            /></td>
-                                        <td><input className="form-control" disabled value="" /></td>
+                                                disabled={role !== 'supervisor'}
+                                            />
+                                        </td>
                                     </tr>
                                 ))}
                             </React.Fragment>
@@ -287,4 +299,4 @@ function ManagerEvaluateEmployee() {
     );
 }
 
-export default ManagerEvaluateEmployee;
+export default SupervisorEvaluateEmployee;

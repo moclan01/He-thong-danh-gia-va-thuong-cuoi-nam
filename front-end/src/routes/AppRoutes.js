@@ -21,6 +21,9 @@ import EmployeeSelfEvaluation from '../pages/SelfAssessment';
 import EvaluationHistory from '../pages/EvaluationHistory';
 import EmployeesEvaluationManagement from '../pages/manager/EmployeesEvaluationManage';
 import ManagerEvaluateEmployee from '../pages/manager/ManagerAssessment';
+import EmployeesEvaluationManagementByDepartment from '../pages/supervisor/EmployeeEvaluationManagerByDepartment';
+import SupervisorEvaluateEmployee from '../pages/supervisor/SupervisorAssessment';
+import EvaluationAnswerDetail from '../pages/EvaluationDetail';
 
 
 export default function AppRoute() {
@@ -47,8 +50,11 @@ export default function AppRoute() {
         <Route path='/form-management/detail/:formId' element={<CriteriaFormDetail />} />
         <Route path='/self-assessment' element={<EmployeeSelfEvaluation />} />
         <Route path='/evaluation-history' element={<EvaluationHistory />} />
-        <Route path='group-assessment' element={<EmployeesEvaluationManagement />} />
+        <Route path='/group-assessment-manager' element={<EmployeesEvaluationManagement />} />
         <Route path='/evaluate/manage/:code' element={<ManagerEvaluateEmployee />} />
+        <Route path='/group-assessment-supervisor' element={<EmployeesEvaluationManagementByDepartment />} />
+        <Route path='/evaluate/supervisor/:code' element={<SupervisorEvaluateEmployee />} />
+        <Route path='/evaluation-detail/:code/:cycleId' element={<EvaluationAnswerDetail />} />
         {/* Thêm các route khác ở đây */}
       </Routes>
     </Router>
