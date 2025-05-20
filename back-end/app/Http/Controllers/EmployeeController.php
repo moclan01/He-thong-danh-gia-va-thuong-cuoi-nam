@@ -182,4 +182,25 @@ class EmployeeController extends Controller
         return response()->json($evaluationCycles);
     }
 
+    public function getEmployeesByDepartmentAndRole($departmentId)
+    {
+        $employees = Employee::where('department_id', $departmentId)
+            ->whereHas('account', function ($query) {
+                $query->where('role', 'employee');
+            })
+            ->get();
+
+        return response()->json($employees);
+    }
+
+    public function getManagersByDepartment($departmentId)
+    {
+        $employees = Employee::where('department_id', $departmentId)
+            ->whereHas('account', function ($query) {
+                $query->where('role', 'manager');
+            })
+            ->get();
+
+        return response()->json($employees);
+    }
 }

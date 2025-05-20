@@ -145,3 +145,5 @@ Route::prefix('evaluation-answer-details')->group(function () {
 
 Route::get('employees/{code}/evaluation-cycles', [EmployeeController::class, 'getEvaluationCycles']);
 Route::get('evaluation-cycles/{cycleId}/criteria-form', [CriteriaFormController::class, 'getFormByCycle']);
+Route::get('/employees/department/{departmentId}/employees-only', [EmployeeController::class, 'getEmployeesByDepartmentAndRole']);
+Route::get('/employees/department/{id}/managers', [EmployeeController::class, 'getManagersByDepartment']);

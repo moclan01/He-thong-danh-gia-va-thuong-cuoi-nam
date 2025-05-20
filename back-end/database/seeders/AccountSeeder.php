@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,38 +15,52 @@ class AccountSeeder extends Seeder
     {
         $accounts = [
             [
-                'code' => '3870',
-                'username' => 'employee1',
+                'code' => '018037',
+                'username' => 'employee1_2',
                 'password' => Hash::make('password123'),
                 'role' => 'employee',
                 'status' => 'active',
             ],
             [
-                'code' => '3979',
-                'username' => 'manager1',
+                'code' => '019219',
+                'username' => 'employee1_3',
+                'password' => Hash::make('password123'),
+                'role' => 'employee',
+                'status' => 'active',
+            ],
+            [
+                'code' => '021445',
+                'username' => 'employee1_4',
+                'password' => Hash::make('password123'),
+                'role' => 'employee',
+                'status' => 'active',
+            ],
+            [
+                'code' => '041009',
+                'username' => 'employee1_5',
+                'password' => Hash::make('password123'),
+                'role' => 'employee',
+                'status' => 'active',
+            ],
+            [
+                'code' => '043570',
+                'username' => 'employee1_6',
+                'password' => Hash::make('password123'),
+                'role' => 'employee',
+                'status' => 'active',
+            ],
+            [
+                'code' => '043870',
+                'username' => 'employee1_7',
+                'password' => Hash::make('password123'),
+                'role' => 'employee',
+                'status' => 'active',
+            ],
+            [
+                'code' => '044084',
+                'username' => 'manager1_2',
                 'password' => Hash::make('password123'),
                 'role' => 'manager',
-                'status' => 'active',
-            ],
-            [
-                'code' => '4639',
-                'username' => 'supervisor1',
-                'password' => Hash::make('password123'),
-                'role' => 'supervisor',
-                'status' => 'active',
-            ],
-            [
-                'code' => '6330',
-                'username' => 'hr1',
-                'password' => Hash::make('password123'),
-                'role' => 'hr',
-                'status' => 'active',
-            ],
-            [
-                'code' => '6851',
-                'username' => 'director1',
-                'password' => Hash::make('password123'),
-                'role' => 'director',
                 'status' => 'active',
             ],
         ];
