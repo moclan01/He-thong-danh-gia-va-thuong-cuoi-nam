@@ -1,15 +1,29 @@
 import axiosInstance from "../../../services/axiosInstance";
 import MainLayout from "../../MainLayout";
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-function AddDepartment() {
+function UpdateDepartment() {
+    const { id } = useParams();
     const [formData, setFormData] = useState({
         department_name: '',
         vp_group: '',
         manage_code: '',
     });
     const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchDepartment();
+    }, []);
+
+    const fetchDepartment = async () => {
+        try {
+            const res = await axiosInstance.get(`/departments/${id}`);
+            setFormData(res.data);
+        } catch (error) {
+            console.error('Lỗi khi tải thông tin phòng ban:', error);
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -21,19 +35,19 @@ function AddDepartment() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axiosInstance.post('/departments', formData);
-            alert('Thêm phòng ban thành công');
+            await axiosInstance.put(`/departments/${id}`, formData);
+            alert('Cập nhật phòng ban thành công');
             navigate('/departments');
         } catch (error) {
-            console.error('Lỗi khi thêm phòng ban:', error);
-            alert('Thêm phòng ban thất bại');
+            console.error('Lỗi khi cập nhật phòng ban:', error);
+            alert('Cập nhật phòng ban thất bại');
         }
     };
 
     return (
         <MainLayout>
             <div className="container mt-4">
-                <h2>Thêm Phòng Ban</h2>
+                <h2>Cập nhật Phòng Ban</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label>Tên phòng ban</label>
@@ -66,8 +80,8 @@ function AddDepartment() {
                             onChange={handleChange}
                         />
                     </div>
-                    <button type="submit" className="btn btn-success me-2">
-                        Thêm
+                    <button type="submit" className="btn btn-primary me-2">
+                        Cập nhật
                     </button>
                     <button type="button" className="btn btn-secondary" onClick={() => navigate('/departments')}>
                         Hủy
@@ -78,4 +92,4 @@ function AddDepartment() {
     );
 }
 
-export default AddDepartment;
+export default UpdateDepartment;
