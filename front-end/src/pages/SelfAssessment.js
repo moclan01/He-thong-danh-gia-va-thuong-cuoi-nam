@@ -13,28 +13,48 @@ function EmployeeSelfEvaluation() {
   const [criterias, setCriterias] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [scores, setScores] = useState({});
+  const [comments, setComments] = useState({});
 
   useEffect(() => {
     if (questions.length > 0) {
-      setScores(prevScores => {
-        const newScores = { ...prevScores };
+      // setScores(prevScores => {
+      //   const newScores = { ...prevScores };
+      //   questions.forEach(q => {
+      //     if (newScores[q.evaluation_question_id] === undefined) {
+      //       newScores[q.evaluation_question_id] = 0;
+      //     }
+      //   });
+      //   return newScores;
+      // });
+      setScores(prev => {
+        const updated = { ...prev };
         questions.forEach(q => {
-          if (newScores[q.evaluation_question_id] === undefined) {
-            newScores[q.evaluation_question_id] = 0;
+          if (updated[q.evaluation_question_id] === undefined) {
+            updated[q.evaluation_question_id] = 0;
           }
         });
-        return newScores;
+        return updated;
+      });
+
+      setComments(prev => {
+        const updated = { ...prev };
+        questions.forEach(q => {
+          if (!updated[q.evaluation_question_id]) {
+            updated[q.evaluation_question_id] = '';
+          }
+        });
+        return updated;
       });
     }
   }, [questions]);
 
-  useEffect(() => {
-    const questionIds = questions.map(q => q.evaluation_question_id);
-    const uniqueIds = new Set(questionIds);
-    if (questionIds.length !== uniqueIds.size) {
-      console.error('Duplicate evaluation_question_id found:', questionIds);
-    }
-  }, [questions]);
+  // useEffect(() => {
+  //   const questionIds = questions.map(q => q.evaluation_question_id);
+  //   const uniqueIds = new Set(questionIds);
+  //   if (questionIds.length !== uniqueIds.size) {
+  //     console.error('Duplicate evaluation_question_id found:', questionIds);
+  //   }
+  // }, [questions]);
 
   useEffect(() => {
     fetchProfileAndCycles();
@@ -100,29 +120,42 @@ function EmployeeSelfEvaluation() {
       setCriterias([]);
       setQuestions([]);
       setScores({});
+      setComments({});
     }
   };
 
   const handleScoreChange = (questionId, value) => {
-    let numValue = value === '' ? 0 : parseInt(value, 10);
-    if (isNaN(numValue) || numValue < 0) numValue = 0;
-
-    setScores(prevScores => {
-      const newScores = {
-        ...prevScores,
-        [questionId]: numValue,
-      };
-      console.log('Updated scores:', newScores);
-      return newScores;
-    });
+    const num = parseInt(value, 10);
+    setScores(prev => ({
+      ...prev,
+      [questionId]: isNaN(num) || num < 0 ? 0 : num
+    }));
   };
 
+  const handleCommentChange = (questionId, value) => {
+    setComments(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
+  };
 
   const handleSubmit = async () => {
     try {
       if (role !== 'employee') {
         alert('Bạn không có quyền thực hiện hành động này.');
         return;
+      }
+
+      for (const q of questions) {
+        const score = scores[q.evaluation_question_id] || 0;
+        const comment = comments[q.evaluation_question_id]?.employee_comment || '';
+
+        if (score > 100 && score < 121 && comment.trim() === '') {
+          alert(
+            `Điểm trên 100 cần nhập lý do`
+          );
+          return;
+        }
       }
 
       const totalScore = questions.reduce((sum, q) => {
@@ -140,15 +173,28 @@ function EmployeeSelfEvaluation() {
       const evaluationAnswerId = answerRes.data.evaluation_answer_id;
 
       // Chuẩn bị chi tiết điểm
-      const batchData = questions.map((q) => ({
+      const batchScoreData = questions.map((q) => ({
         evaluation_question_id: q.evaluation_question_id,
         evaluation_answer_id: evaluationAnswerId,
         employee_score: parseInt(scores[q.evaluation_question_id] || 0, 10),
       }));
 
+
+
       // Gửi batch điểm chi tiết
       const detailRes = await axiosInstance.post('/evaluation-answer-details/employee/batch', {
-        data: batchData
+        data: batchScoreData
+      });
+
+      // Tạo batch comment
+      const batchCommentData = detailRes.data.map((item) => ({
+        evaluation_answer_detail_id: item.evaluation_answer_detail_id,
+        employee_comment: comments[item.evaluation_question_id]?.employee_comment || ''
+      }));
+
+      // Gửi batch comment
+      await axiosInstance.put('/evaluation-answer-details/employee/comments/batch', {
+        data: batchCommentData
       });
 
       console.log('Kết quả lưu chi tiết:', detailRes.data);
@@ -185,11 +231,13 @@ function EmployeeSelfEvaluation() {
       <table className="table table-bordered">
         <thead className="thead-dark">
           <tr>
-            <th>Nội dung</th>
-            <th>Điểm tối đa</th>
-            <th>Nhân viên</th>
-            <th>Quản lý</th>
-            <th>Thống đốc</th>
+            <th style={{ width: '30%' }}>Nội dung</th>
+            <th style={{ width: '5%' }}>Điểm tối đa</th>
+            <th style={{ width: '10%' }}>Nhân viên</th>
+            <th style={{ width: '40%' }}>Nhận xét</th>
+            <th style={{ width: '5%' }}>Giám sát</th>
+            <th style={{ width: '5%' }}>Nhận xét</th>
+            <th style={{ width: '5%' }}>Quản lý</th>
           </tr>
         </thead>
         <tbody>
@@ -201,13 +249,13 @@ function EmployeeSelfEvaluation() {
             return (
               <React.Fragment key={criteria.evaluation_criteria_id}>
                 <tr className="table-secondary">
-                  <td colSpan="6">
+                  <td colSpan="7">
                     <strong>Tiêu chí: {criteria.criteria_name}</strong>
                   </td>
                 </tr>
                 {relatedQuestions.map((q) => (
                   <tr key={q.evaluation_question_id}>
-                    <td>{q.question_name}</td>
+                    <td style={{ width: '200px' }}>{q.question_name}</td>
                     <td>{q.max_score}</td>
                     <td>
                       <input
@@ -222,6 +270,18 @@ function EmployeeSelfEvaluation() {
                         disabled={role !== 'employee'}
                       />
                     </td>
+                    <td>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={comments[q.evaluation_question_id]?.employee_comment || ''}
+                        onChange={(e) =>
+                          handleCommentChange(q.evaluation_question_id, 'employee_comment', e.target.value)
+                        }
+                        disabled={role !== 'employee'}
+                      />
+                    </td>
+                    <td><input className="form-control" disabled value="" /></td>
                     <td><input className="form-control" disabled value="" /></td>
                     <td><input className="form-control" disabled value="" /></td>
                   </tr>

@@ -226,11 +226,13 @@ function ManagerEvaluateEmployee() {
             <table className="table table-bordered">
                 <thead className="thead-dark">
                     <tr>
-                        <th>Nội dung</th>
-                        <th>Điểm tối đa</th>
-                        <th>Nhân viên</th>
-                        <th>Quản lý</th>
-                        <th>Thống đốc</th>
+                        <th style={{ width: '30%' }}>Nội dung</th>
+                        <th style={{ width: '5%' }}>Điểm tối đa</th>
+                        <th style={{ width: '7.5%' }}>Nhân viên</th>
+                        <th style={{ width: '20%' }}>Nhận xét</th>
+                        <th style={{ width: '7.5%' }}>Giám sát</th>
+                        <th style={{ width: '20%' }}>Nhận xét</th>
+                        <th style={{ width: '10%' }}>Quản lý</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -242,7 +244,7 @@ function ManagerEvaluateEmployee() {
                         return (
                             <React.Fragment key={criteria.evaluation_criteria_id}>
                                 <tr className="table-secondary">
-                                    <td colSpan="6">
+                                    <td colSpan="7">
                                         <strong>Tiêu chí: {criteria.criteria_name}</strong>
                                     </td>
                                 </tr>
@@ -257,6 +259,9 @@ function ManagerEvaluateEmployee() {
                                                 value={employeeScores[q.evaluation_question_id] ?? 0}
                                             />
                                         </td>
+                                        <td><input className="form-control" disabled value="" /></td>
+                                        <td><input className="form-control" disabled value="" /></td>
+                                        <td><input className="form-control" disabled value="" /></td>
                                         <td>
                                             <input
                                                 type="number"
@@ -269,7 +274,7 @@ function ManagerEvaluateEmployee() {
                                                 }
                                                 disabled={role !== 'manager'}
                                             /></td>
-                                        <td><input className="form-control" disabled value="" /></td>
+                                        
                                     </tr>
                                 ))}
                             </React.Fragment>
