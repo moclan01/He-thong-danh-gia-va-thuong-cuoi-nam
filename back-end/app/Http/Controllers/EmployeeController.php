@@ -162,7 +162,11 @@ class EmployeeController extends Controller
         $employees = Employee::where('department_id', $departmentId)->get();
         return response()->json($employees);
     }
-
+    public function getByPlant($plantId)
+    {
+        $employees = Employee::where('plant_id', $plantId)->get();
+        return response()->json($employees);
+    }
     public function getEvaluationCycles($code)
     {
         $employee = $this->employeeRepository->getById($code);

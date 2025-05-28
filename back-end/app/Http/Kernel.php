@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Support\Facades\Schedule;
 
 class Kernel extends HttpKernel
 {
@@ -19,7 +20,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        
+
     ];
 
     /**
@@ -54,7 +55,17 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class, 
+        'auth' => \App\Http\Middleware\Authenticate::class,
         'role' => \App\Http\Middleware\Role::class,
     ];
+
+    // protected $commands = [
+    //     \App\Console\Commands\UpdateEvaluationCyclePhase::class,
+    // ];
+
+
+    // protected function schedule(Schedule $schedule)
+    // {
+    //     $schedule->command('cycle:update-phase')->dailyAt('00:10');
+    // }
 }

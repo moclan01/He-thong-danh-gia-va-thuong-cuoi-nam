@@ -40,6 +40,7 @@ Route::prefix('employees')->group(function () {
     Route::delete('{id}', [EmployeeController::class, 'destroy']);
     Route::get('/code-r/{codeR}', [EmployeeController::class, 'getByCodeR']);
     Route::get('/department/{departmentId}', [EmployeeController::class, 'getByDepartment']);
+    Route::get('/plant/{plantId}', [EmployeeController::class, 'getByPlant']);
 });
 
 Route::prefix('accounts')->group(function () {
@@ -138,8 +139,10 @@ Route::prefix('evaluation-answer-details')->group(function () {
 
     // Batch routes
     Route::post('/employee/batch', [EvaluationAnswerDetailController::class, 'storeByEmployeeBatch']);
-    Route::put('/manager/batch', [EvaluationAnswerDetailController::class, 'updateManagerScoresBatch']);
+    Route::put('/employee/comments/batch', [EvaluationAnswerDetailController::class, 'updateEmployeeCommentsBatch']);
     Route::put('/supervisor/batch', [EvaluationAnswerDetailController::class, 'updateSupervisorScoresBatch']);
+    Route::put('/supervisor/comments/batch', [EvaluationAnswerDetailController::class, 'updateSupervisorCommentsBatch']);
+    Route::put('/manager/batch', [EvaluationAnswerDetailController::class, 'updateManagerScoresBatch']);
     Route::put('/director/batch', [EvaluationAnswerDetailController::class, 'updateDirectorScoresBatch']);
 });
 

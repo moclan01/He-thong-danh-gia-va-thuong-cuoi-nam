@@ -82,6 +82,7 @@ class EvaluationAnswerDetailController extends Controller
             'evaluation_question_id' => 'required|integer|exists:evaluation_questions,evaluation_question_id',
             'evaluation_answer_id' => 'required|integer|exists:evaluation_answers,evaluation_answer_id',
             'employee_score' => 'required|integer|min:0|max:120',
+            'employee_comment' => 'nullable|string|max:1000',
         ]);
 
         $evaluationAnswerDetail = $this->evaluationAnswerDetailRepository->create($validated);
@@ -106,6 +107,7 @@ class EvaluationAnswerDetailController extends Controller
     {
         $validated = $request->validate([
             'supervisor_score' => 'required|integer|min:0|max:120',
+            'supervisor_comment' => 'nullable|string|max:1000',
         ]);
 
         $evaluationAnswerDetail = $this->evaluationAnswerDetailRepository->update($id, $validated);
@@ -171,5 +173,64 @@ class EvaluationAnswerDetailController extends Controller
 
         return response()->json($updated);
     }
-    
+
+    public function updateEmployeeScoresBatch(Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.*.evaluation_answer_detail_id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
+            'data.*.employee_score' => 'required|integer|min:0|max:120',
+        ]);
+
+        $updated = [];
+
+        foreach ($validated['data'] as $item) {
+            $updated[] = $this->evaluationAnswerDetailRepository->update(
+                $item['evaluation_answer_detail_id'],
+                ['employee_score' => $item['employee_score']]
+            );
+        }
+
+        return response()->json($updated);
+    }
+
+    public function updateEmployeeCommentsBatch(Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.*.evaluation_answer_detail_id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
+            'data.*.employee_comment' => 'nullable|string|max:1000',
+        ]);
+
+        $updated = [];
+
+        foreach ($validated['data'] as $item) {
+            $updated[] = $this->evaluationAnswerDetailRepository->update(
+                $item['evaluation_answer_detail_id'],
+                ['employee_comment' => $item['employee_comment']]
+            );
+        }
+
+        return response()->json($updated);
+    }
+
+    public function updateSupervisorCommentsBatch(Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.*.evaluation_answer_detail_id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
+            'data.*.supervisor_comment' => 'nullable|string|max:1000',
+        ]);
+
+        $updated = [];
+
+        foreach ($validated['data'] as $item) {
+            $updated[] = $this->evaluationAnswerDetailRepository->update(
+                $item['evaluation_answer_detail_id'],
+                ['supervisor_comment' => $item['supervisor_comment']]
+            );
+        }
+
+        return response()->json($updated);
+    }
 }
