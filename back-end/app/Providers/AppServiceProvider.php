@@ -28,15 +28,21 @@ use App\Repositories\Interfaces\IHFormItemRepository;
 use App\Repositories\Interfaces\IHowFormItemRepository;
 use App\Repositories\Interfaces\IHowFormRepository;
 use App\Repositories\Interfaces\IOperationRepository;
+use App\Repositories\Interfaces\IPersonalDevelopmentFormRepository;
 use App\Repositories\Interfaces\IPlantRepository;
 use App\Repositories\Interfaces\IPositionRepository;
 use App\Repositories\Interfaces\ITotalCriteriaScoreRepository;
 use App\Repositories\Interfaces\IUserRepository;
+use App\Repositories\Interfaces\IWformItemRepository;
+use App\Repositories\Interfaces\IWhatFormRepository;
 use App\Repositories\OperationRepository;
+use App\Repositories\PersonalDevelopmentFormRepository;
 use App\Repositories\PlantRepository;
 use App\Repositories\PositionRepository;
 use App\Repositories\TotalCriteriaScoreRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\WformItemRepository;
+use App\Repositories\WhatFormRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -55,14 +61,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IAccountRepository::class, AccountRepository::class);
         $this->app->bind(ICriteriaFormRepository::class, CriteriaFormRepository::class);
         $this->app->bind(IEvaluationCriteriaRepository::class, EvaluationCriteriaRepository::class);
-        $this->app->bind(IEvaluationQuestionRepository::class,EvaluationQuestionRepository::class);
-        $this->app->bind(IEvaluationAnswerRepository::class,EvaluationAnswerRepository::class);
-        $this->app->bind(IEvaluationAnswerDetailRepository::class,EvaluationAnswerDetailRepository::class);
-        $this->app->bind(ITotalCriteriaScoreRepository::class,TotalCriteriaScoreRepository::class);
-        $this->app->bind(IHowFormRepository::class,HowFormRepository::class);
-        $this->app->bind(IHFormItemRepository::class,HFormItemRepository::class);
-
-    }   
+        $this->app->bind(IEvaluationQuestionRepository::class, EvaluationQuestionRepository::class);
+        $this->app->bind(IEvaluationAnswerRepository::class, EvaluationAnswerRepository::class);
+        $this->app->bind(IEvaluationAnswerDetailRepository::class, EvaluationAnswerDetailRepository::class);
+        $this->app->bind(ITotalCriteriaScoreRepository::class, TotalCriteriaScoreRepository::class);
+        $this->app->bind(IHowFormRepository::class, HowFormRepository::class);
+        $this->app->bind(IHFormItemRepository::class, HFormItemRepository::class);
+        $this->app->bind(IWhatFormRepository::class, WhatFormRepository::class);
+        $this->app->bind(IPersonalDevelopmentFormRepository::class, PersonalDevelopmentFormRepository::class);
+        $this->app->bind(IWformItemRepository::class, WformItemRepository::class);
+    }
 
     /**
      * Bootstrap any application services.

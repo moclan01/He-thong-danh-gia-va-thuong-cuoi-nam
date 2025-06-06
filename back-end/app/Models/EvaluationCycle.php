@@ -24,4 +24,14 @@ class EvaluationCycle extends Model
     {
         return $this->hasMany(CriteriaForm::class, 'evaluation_cycle_id', 'evaluation_cycle_id');
     }
+
+    public function whatForms()
+    {
+        return $this->hasMany(WhatForm::class, 'evaluation_cycle_id', 'evaluation_cycle_id');
+    }
+
+    public function personalDevelopmentForms()
+    {
+        return $this->hasMany(PersonalDevelopmentForm::class, 'evaluation_cycle_id', 'evaluation_cycle_id');
+    }
 }

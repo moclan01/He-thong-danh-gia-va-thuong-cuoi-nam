@@ -14,9 +14,12 @@ use App\Http\Controllers\HFormItemController;
 use App\Http\Controllers\HowFormController;
 use App\Http\Controllers\HowFormItemController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\PersonalDevelopmentFormController;
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\TotalCriteriaScoreController;
+use App\Http\Controllers\WformItemController;
+use App\Http\Controllers\WhatFormController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -177,4 +180,28 @@ Route::prefix('hform-items')->group(function () {
     Route::get('/{id}', [HFormItemController::class, 'show']);
     Route::put('/{id}', [HFormItemController::class, 'update']);
     Route::delete('/{id}', [HFormItemController::class, 'destroy']);
+});
+
+Route::prefix('what-forms')->group(function () {
+    Route::get('/', [WhatFormController::class, 'index']);
+    Route::get('/{id}', [WhatFormController::class, 'show']);
+    Route::post('/', [WhatFormController::class, 'store']);
+    Route::put('/{id}', [WhatFormController::class, 'update']);
+    Route::delete('/{id}', [WhatFormController::class, 'destroy']);
+});
+
+Route::prefix('personal-development-forms')->group(function () {
+    Route::get('/', [PersonalDevelopmentFormController::class, 'index']);
+    Route::get('/{id}', [PersonalDevelopmentFormController::class, 'show']);
+    Route::post('/', [PersonalDevelopmentFormController::class, 'store']);
+    Route::put('/{id}', [PersonalDevelopmentFormController::class, 'update']);
+    Route::delete('/{id}', [PersonalDevelopmentFormController::class, 'destroy']);
+});
+
+Route::prefix('wform-items')->group(function () {
+    Route::get('/', [WformItemController::class, 'index']);
+    Route::get('/{id}', [WformItemController::class, 'show']);
+    Route::post('/', [WformItemController::class, 'store']);
+    Route::put('/{id}', [WformItemController::class, 'update']);
+    Route::delete('/{id}', [WformItemController::class, 'destroy']);
 });
