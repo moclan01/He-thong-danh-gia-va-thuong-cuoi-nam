@@ -17,6 +17,8 @@ class EvaluationAnswerDetail extends Model
         'manager_score',
         'supervisor_score',
         'director_score',
+        'employee_comment',
+        'supervisor_comment',
     ];
 
     protected $casts = [
