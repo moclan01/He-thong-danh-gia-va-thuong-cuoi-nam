@@ -18,6 +18,6 @@ class HowForm extends Model
 
     public function howFormItems()
     {
-        return $this->hasMany(HowFormItem::class, 'how_form_id', 'how_form_id');
+        return $this->hasMany(HformItem::class, 'how_form_id', 'how_form_id');
     }
 }

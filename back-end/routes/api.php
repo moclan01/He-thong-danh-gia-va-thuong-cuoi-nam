@@ -10,9 +10,13 @@ use App\Http\Controllers\EvaluationAnswerDetailController;
 use App\Http\Controllers\EvaluationCriteriaController;
 use App\Http\Controllers\EvaluationCycleController;
 use App\Http\Controllers\EvaluationQuestionController;
+use App\Http\Controllers\HFormItemController;
+use App\Http\Controllers\HowFormController;
+use App\Http\Controllers\HowFormItemController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\TotalCriteriaScoreController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -150,3 +154,27 @@ Route::get('employees/{code}/evaluation-cycles', [EmployeeController::class, 'ge
 Route::get('evaluation-cycles/{cycleId}/criteria-form', [CriteriaFormController::class, 'getFormByCycle']);
 Route::get('/employees/department/{departmentId}/employees-only', [EmployeeController::class, 'getEmployeesByDepartmentAndRole']);
 Route::get('/employees/department/{id}/managers', [EmployeeController::class, 'getManagersByDepartment']);
+
+Route::prefix('total-criteria-scores')->group(function () {
+    Route::get('/', [TotalCriteriaScoreController::class, 'index']);
+    Route::post('/', [TotalCriteriaScoreController::class, 'store']);
+    Route::get('/{id}', [TotalCriteriaScoreController::class, 'show']);
+    Route::put('/{id}', [TotalCriteriaScoreController::class, 'update']);
+    Route::delete('/{id}', [TotalCriteriaScoreController::class, 'destroy']);
+});
+
+Route::prefix('how-forms')->group(function () {
+    Route::get('/', [HowFormController::class, 'index']);
+    Route::post('/', [HowFormController::class, 'store']);
+    Route::get('/{id}', [HowFormController::class, 'show']);
+    Route::put('/{id}', [HowFormController::class, 'update']);
+    Route::delete('/{id}', [HowFormController::class, 'destroy']);
+});
+
+Route::prefix('hform-items')->group(function () {
+    Route::get('/', [HFormItemController::class, 'index']);
+    Route::post('/', [HFormItemController::class, 'store']);
+    Route::get('/{id}', [HFormItemController::class, 'show']);
+    Route::put('/{id}', [HFormItemController::class, 'update']);
+    Route::delete('/{id}', [HFormItemController::class, 'destroy']);
+});

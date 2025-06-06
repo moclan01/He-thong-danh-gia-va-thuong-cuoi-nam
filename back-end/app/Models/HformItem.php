@@ -10,6 +10,7 @@ class HformItem extends Model
 
     protected $fillable = [
         'total_criteria_score_id',
+        'how_form_id',
         'name',
         'weighting',
         'threshold',
@@ -19,6 +20,22 @@ class HformItem extends Model
         'FY_target',
         'actual',
         'score',
+        'm',
+        'n'
+    ];
+
+     protected $casts = [
+        'total_criteria_score_id' => 'integer',
+        'how_form_id' => 'integer',
+        'weighting' => 'float',
+        'threshold' => 'float',
+        'target' => 'float',
+        'stretch' => 'float',
+        'FY_target' => 'float',
+        'actual' => 'float',
+        'score' => 'float',
+        'm' => 'float',
+        'n' => 'float',
     ];
 
     public function totalCriteriaScore()
@@ -26,8 +43,8 @@ class HformItem extends Model
         return $this->belongsTo(TotalCriteriaScore::class, 'total_criteria_score_id', 'total_criteria_score_id');
     }
 
-    public function howFormItems()
+    public function howForm()
     {
-        return $this->hasMany(HowFormItem::class, 'hform_item_id', 'hform_item_id');
+        return $this->belongsTo(HowForm::class, 'how_form_id', 'how_form_id');
     }
 }

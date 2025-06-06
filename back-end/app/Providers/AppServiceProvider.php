@@ -12,6 +12,9 @@ use App\Repositories\EvaluationAnswerRepository;
 use App\Repositories\EvaluationCriteriaRepository;
 use App\Repositories\EvaluationCycleRepository;
 use App\Repositories\EvaluationQuestionRepository;
+use App\Repositories\HFormItemRepository;
+use App\Repositories\HowFormItemRepository;
+use App\Repositories\HowFormRepository;
 use App\Repositories\Interfaces\IAccountRepository;
 use App\Repositories\Interfaces\ICriteriaFormRepository;
 use App\Repositories\Interfaces\IDepartmentRepository;
@@ -21,13 +24,18 @@ use App\Repositories\Interfaces\IEvaluationAnswerRepository;
 use App\Repositories\Interfaces\IEvaluationCriteriaRepository;
 use App\Repositories\Interfaces\IEvaluationCycleRepository;
 use App\Repositories\Interfaces\IEvaluationQuestionRepository;
+use App\Repositories\Interfaces\IHFormItemRepository;
+use App\Repositories\Interfaces\IHowFormItemRepository;
+use App\Repositories\Interfaces\IHowFormRepository;
 use App\Repositories\Interfaces\IOperationRepository;
 use App\Repositories\Interfaces\IPlantRepository;
 use App\Repositories\Interfaces\IPositionRepository;
+use App\Repositories\Interfaces\ITotalCriteriaScoreRepository;
 use App\Repositories\Interfaces\IUserRepository;
 use App\Repositories\OperationRepository;
 use App\Repositories\PlantRepository;
 use App\Repositories\PositionRepository;
+use App\Repositories\TotalCriteriaScoreRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -50,6 +58,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEvaluationQuestionRepository::class,EvaluationQuestionRepository::class);
         $this->app->bind(IEvaluationAnswerRepository::class,EvaluationAnswerRepository::class);
         $this->app->bind(IEvaluationAnswerDetailRepository::class,EvaluationAnswerDetailRepository::class);
+        $this->app->bind(ITotalCriteriaScoreRepository::class,TotalCriteriaScoreRepository::class);
+        $this->app->bind(IHowFormRepository::class,HowFormRepository::class);
+        $this->app->bind(IHFormItemRepository::class,HFormItemRepository::class);
+
     }   
 
     /**

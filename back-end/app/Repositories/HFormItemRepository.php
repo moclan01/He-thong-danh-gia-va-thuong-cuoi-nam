@@ -5,15 +5,16 @@ namespace App\Repositories;
 use App\Models\HformItem;
 use App\Repositories\Interfaces\IHFormItemRepository;
 
-class HFormItemRepository implements IHFormItemRepository{
+class HFormItemRepository implements IHFormItemRepository
+{
     public function getAll()
     {
-        return HFormItem::with('totalCriteriaScore')->get();
+        return HFormItem::with('totalCriteriaScore', 'howForm')->get();
     }
 
     public function getById($id)
     {
-        return HFormItem::with('totalCriteriaScore')->find($id);
+        return HFormItem::with('totalCriteriaScore', 'howForm')->find($id);
     }
 
     public function create(array $data)
@@ -26,7 +27,7 @@ class HFormItemRepository implements IHFormItemRepository{
         $item = HFormItem::find($id);
         if ($item) {
             $item->update($data);
-            return HformItem::with('totalCriteriaScore')->find($id);
+            return HformItem::with('totalCriteriaScore', 'howForm')->find($id);
         }
         return null;
     }
@@ -39,5 +40,11 @@ class HFormItemRepository implements IHFormItemRepository{
             return true;
         }
         return false;
+    }
+    public function getByHowForm($how_form_id)
+    {
+        return HFormItem::with(['totalCriteriaScore', 'howForm'])
+            ->where('how_form_id', $how_form_id)
+            ->get();
     }
 }
