@@ -31,6 +31,7 @@ import AddPlant from '../pages/hr/plant/AddPlant';
 import UpdatePlant from '../pages/hr/plant/UpdatePlant';
 import AddDepartment from '../pages/hr/department/AddDepartment';
 import UpdateDepartment from '../pages/hr/department/UpdateDepartment';
+import SupervisorsEvaluationManagement from '../pages/manager/SupervisorEvaluationManage';
 
 
 export default function AppRoute() {
@@ -58,9 +59,9 @@ export default function AppRoute() {
         <Route path='/self-assessment' element={<EmployeeSelfEvaluation />} />
         <Route path='/evaluation-history' element={<EvaluationHistory />} />
         <Route path='/group-assessment-manager' element={<EmployeesEvaluationManagement />} />
-        <Route path='/evaluate/manage/:code' element={<ManagerEvaluateEmployee />} />
-        <Route path='/group-assessment-supervisor' element={<EmployeesEvaluationManagementByDepartment />} />
         <Route path='/evaluate/supervisor/:code' element={<SupervisorEvaluateEmployee />} />
+        <Route path='/group-assessment-supervisor' element={<EmployeesEvaluationManagementByDepartment />} />
+        <Route path='/evaluate/manager/:code' element={<ManagerEvaluateEmployee />} />
         <Route path='/evaluation-detail/:code/:cycleId' element={<EvaluationAnswerDetail />} />
         <Route path='/employee-management' element={<EmployeeManage />} />
         <Route path='/department-management' element={<DepartmentManager />} />
@@ -69,6 +70,7 @@ export default function AppRoute() {
         <Route path="/plant-management" element={<PlantManager />} />
         <Route path="/plant/add" element={<AddPlant />} />
         <Route path="/plant/update/:id" element={<UpdatePlant />} />
+        <Route path="/evaluate-supervisors" element={<SupervisorsEvaluationManagement />} />
 
         {/* Thêm các route khác ở đây */}
       </Routes>

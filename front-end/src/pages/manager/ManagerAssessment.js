@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../MainLayout';
 import axiosInstance from '../../services/axiosInstance';
 
 function ManagerEvaluateEmployee() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const role = user?.role;
+    const navigate = useNavigate();
+    let user = null;
+    try {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            user = JSON.parse(userData);
+        }
+    } catch (error) {
+        console.error('Lỗi khi parse user từ localStorage:', error);
+    }
+    const role = user?.role?.toLowerCase() || null;
+
     const { code } = useParams();
     const [evaluationCycles, setEvaluationCycles] = useState([]);
     const [selectedCycle, setSelectedCycle] = useState('');
@@ -16,7 +26,18 @@ function ManagerEvaluateEmployee() {
     const [evaluationAnswerId, setEvaluationAnswerId] = useState(null);
     const [answerDetails, setAnswerDetails] = useState([]);
     const [employeeScores, setEmployeeScores] = useState({});
+    const [managerScores, setManagerScores] = useState({});
 
+    useEffect(() => {
+        if (role !== 'manager') {
+            alert('Bạn không có quyền truy cập trang này.');
+            navigate('/home');
+            return;
+        }
+        fetchCycles();
+    }, [role, navigate]);
+
+    // Khởi tạo scores khi questions thay đổi
     useEffect(() => {
         if (questions.length > 0) {
             setScores(prevScores => {
@@ -31,6 +52,7 @@ function ManagerEvaluateEmployee() {
         }
     }, [questions]);
 
+    // Kiểm tra duplicate evaluation_question_id
     useEffect(() => {
         const questionIds = questions.map(q => q.evaluation_question_id);
         const uniqueIds = new Set(questionIds);
@@ -39,16 +61,13 @@ function ManagerEvaluateEmployee() {
         }
     }, [questions]);
 
-    useEffect(() => {
-        fetchCycles();
-    }, []);
-
     const fetchCycles = async () => {
         try {
             const cycleRes = await axiosInstance.get(`/employees/${code}/evaluation-cycles`);
             setEvaluationCycles(cycleRes.data);
         } catch (error) {
-            console.error('Lỗi khi lấy hoặc chu kỳ:', error);
+            console.error('Lỗi khi lấy chu kỳ:', error);
+            alert('Không thể tải chu kỳ đánh giá.');
         }
     };
 
@@ -65,7 +84,6 @@ function ManagerEvaluateEmployee() {
             setCriterias(criteriaList);
 
             const allQuestions = [];
-
             for (const criteria of criteriaList) {
                 const questionsRes = await axiosInstance.get(
                     `/evaluation-criterias/${criteria.evaluation_criteria_id}/questions`
@@ -89,34 +107,37 @@ function ManagerEvaluateEmployee() {
             setQuestions([]);
             setScores({});
             setEmployeeScores({});
+            setManagerScores({});
+            alert('Không thể tải biểu mẫu hoặc câu hỏi đánh giá.');
         }
     };
 
     const fetchScoreEmployeeAnswer = async (formId) => {
         try {
-            // Lấy evaluation_answer theo code và formId
             const answerRes = await axiosInstance.get(`/evaluation-answers/by-code-and-form-id/${code}/${formId}`);
             const answer = answerRes.data;
             setEvaluationAnswerId(answer.evaluation_answer_id);
-            console.log(`evaluation_answer_id: ${answer.evaluation_answer_id}`)
+            console.log(`evaluation_answer_id: ${answer.evaluation_answer_id}`);
 
-            // Lấy chi tiết điểm
             const detailsRes = await axiosInstance.get(`/evaluation-answers/${answer.evaluation_answer_id}/details`);
             const details = detailsRes.data.evaluation_answer_details;
             setAnswerDetails(details);
-            console.log(details)
+            console.log(details);
 
-            // Map điểm employee_score theo evaluation_question_id
             const newEmployeeScores = {};
+            const newManagerScores = {};
             details.forEach(detail => {
-                newEmployeeScores[detail.evaluation_question_id] = detail.employee_score;
+                newEmployeeScores[detail.evaluation_question_id] = detail.employee_score || 0;
+                newManagerScores[detail.evaluation_question_id] = detail.manager_score || 0;
             });
             setEmployeeScores(newEmployeeScores);
-            console.log(newEmployeeScores)
-
+            setManagerScores(newManagerScores);
+            // SỬA: Khởi tạo scores từ managerScores để hiển thị điểm hiện tại
+            setScores(newManagerScores);
+            console.log('Employee scores:', newEmployeeScores);
+            console.log('Manager scores:', newManagerScores);
         } catch (error) {
-            console.error('Lỗi khi lấy EvaluationAnswer hoặc chi tiết:');
-
+            console.error('Lỗi khi lấy EvaluationAnswer hoặc chi tiết:', error);
             if (error.response) {
                 console.error('Status:', error.response.status);
                 console.error('Data:', error.response.data);
@@ -126,14 +147,13 @@ function ManagerEvaluateEmployee() {
             } else {
                 console.error('Message:', error.message);
             }
-
             setEvaluationAnswerId(null);
             setAnswerDetails([]);
             setEmployeeScores({});
+            setManagerScores({});
             setScores({});
         }
     };
-
 
     const handleCycleChange = (e) => {
         const cycleId = e.target.value;
@@ -146,6 +166,7 @@ function ManagerEvaluateEmployee() {
             setQuestions([]);
             setScores({});
             setEmployeeScores({});
+            setManagerScores({});
         }
     };
 
@@ -153,14 +174,10 @@ function ManagerEvaluateEmployee() {
         let numValue = value === '' ? 0 : parseInt(value, 10);
         if (isNaN(numValue) || numValue < 0) numValue = 0;
         if (numValue > maxScore) numValue = maxScore;
-        setScores(prevScores => {
-            const newScores = {
-                ...prevScores,
-                [questionId]: numValue,
-            };
-            console.log('Updated scores:', newScores);
-            return newScores;
-        });
+        setScores(prevScores => ({
+            ...prevScores,
+            [questionId]: numValue
+        }));
     };
 
     const handleSubmit = async () => {
@@ -170,20 +187,29 @@ function ManagerEvaluateEmployee() {
                 return;
             }
 
+            if (!evaluationAnswerId) {
+                alert('Không tìm thấy đánh giá để cập nhật. Vui lòng chọn chu kỳ.');
+                return;
+            }
+
             const totalScore = questions.reduce((sum, q) => {
                 return sum + Number(scores[q.evaluation_question_id] || 0);
             }, 0);
 
-            // Gửi đánh giá tổng trước
-            const answerRes = await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}/update-manage-score`, {
-                evaluation_answer_id: evaluationAnswerId,
-                total_score_manage: totalScore
-            });
+            try {
+                await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}/update-manager-score`, {
+                    total_score_manage: totalScore
+                });
+                console.log('Cập nhật total_score_manage thành công');
+            } catch (error) {
+                throw new Error(`Lỗi khi cập nhật tổng điểm: ${error.response?.data?.message || error.message}`);
+            }
+
 
             const batchData = answerDetails.map((detail) => ({
                 evaluation_answer_detail_id: detail.evaluation_answer_detail_id,
-                manager_score: parseInt(scores[detail.evaluation_question_id] || 0, 10),
-            }))
+                manager_score: parseInt(scores[detail.evaluation_question_id] || 0, 10)
+            }));
 
             const detailRes = await axiosInstance.put('/evaluation-answer-details/manager/batch', {
                 data: batchData
@@ -191,10 +217,15 @@ function ManagerEvaluateEmployee() {
 
             console.log('Kết quả lưu chi tiết:', detailRes.data);
             alert('Lưu đánh giá thành công!');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } catch (error) {
-            if (error.response && error.response.status === 422) {
-                console.error('Lỗi xác thực (validation):', error.response.data.errors);
-                alert('Dữ liệu không hợp lệ: ' + JSON.stringify(error.response.data.errors));
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data.message || JSON.stringify(error.response.data.errors) || 'Lỗi không xác định từ server';
+                console.error(`Status: ${status}, Message: ${message}`);
+                alert(`Lỗi khi lưu đánh giá: ${message} (Status: ${status})`);
             } else {
                 console.error('Lỗi khi lưu đánh giá:', error);
                 alert('Có lỗi xảy ra khi lưu đánh giá!');
@@ -256,12 +287,30 @@ function ManagerEvaluateEmployee() {
                                             <input
                                                 className="form-control"
                                                 disabled
-                                                value={employeeScores[q.evaluation_question_id] ?? 0}
+                                                value={employeeScores[q.evaluation_question_id] || 0}
                                             />
                                         </td>
-                                        <td><input className="form-control" disabled value="" /></td>
-                                        <td><input className="form-control" disabled value="" /></td>
-                                        <td><input className="form-control" disabled value="" /></td>
+                                        <td>
+                                            <input
+                                                className="form-control"
+                                                disabled
+                                                value="" // TBD: Nhận xét nhân viên
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                className="form-control"
+                                                disabled
+                                                value={0} // TBD: Điểm giám sát
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                className="form-control"
+                                                disabled
+                                                value="" // TBD: Nhận xét giám sát
+                                            />
+                                        </td>
                                         <td>
                                             <input
                                                 type="number"
@@ -273,8 +322,8 @@ function ManagerEvaluateEmployee() {
                                                     handleScoreChange(q.evaluation_question_id, e.target.value, q.max_score)
                                                 }
                                                 disabled={role !== 'manager'}
-                                            /></td>
-                                        
+                                            />
+                                        </td>
                                     </tr>
                                 ))}
                             </React.Fragment>

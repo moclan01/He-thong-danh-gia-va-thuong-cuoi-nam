@@ -6,10 +6,19 @@ export default function Sidebar() {
     const user = JSON.parse(localStorage.getItem('user'));
     const role = user?.role;
 
+    if (!user || !role) {
+        return (
+            <div className="bg-dark text-white p-3" style={{ width: '250px', height: '100vh' }}>
+                <div>Vui lòng đăng nhập để xem menu.</div>
+            </div>
+        );
+    }
+
     return (
         <div className="bg-dark text-white p-3" style={{ width: '250px', height: '100vh' }}>
             <h4 className="mb-4">Home</h4>
             <ul className="nav flex-column">
+                
                 <li className="nav-item mb-2">
                     <button className="btn btn-link text-white nav-link" onClick={() => navigate('/home')}>
                         Home
@@ -25,47 +34,41 @@ export default function Sidebar() {
                         Đổi mật khẩu
                     </button>
                 </li>
-                <li className="nav-item mb-2">
-                    <button className="btn btn-link text-white nav-link" onClick={() => navigate('/self-assessment')}>
-                        Tự đánh giá
-                    </button>
-                </li>
-                <li className="nav-item mb-2">
-                    <button className="btn btn-link text-white nav-link" onClick={() => navigate('/evaluation-history')}>
-                        Lịch sử và kết quả đánh giá
-                    </button>
-                </li>
-                {(role === 'manager') && (
+
+                
+                {(role === 'employee' || role === 'supervisor' || role === 'manager') && (
                     <>
                         <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/group-assessment-manager')}>
-                                Quản lý đánh giá tập thể
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/self-assessment')}>
+                                Tự đánh giá
                             </button>
                         </li>
                         <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/peer-assessment-manager')}>
-                                Đánh giá đồng cấp
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/evaluation-history')}>
+                                Lịch sử và kết quả đánh giá
                             </button>
                         </li>
                     </>
                 )}
 
-                {/* Supervisor-specific */}
-                {role === 'supervisor' && (
+                
+                {(role === 'supervisor' || role === 'manager') && (
+                    <li className="nav-item mb-2">
+                        <button
+                            className="btn btn-link text-white nav-link"
+                            onClick={() => navigate(role === 'supervisor' ? '/group-assessment-supervisor' : '/group-assessment-manager')}
+                        >
+                            Quản lý đánh giá tập thể
+                        </button>
+                    </li>
+                )}
+
+                
+                {role === 'manager' && (
                     <>
                         <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/group-assessment-supervisor')}>
-                                Quản lý đánh giá tập thể
-                            </button>
-                        </li>
-                        <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/peer-assessment-supervisor')}>
-                                Đánh giá đồng cấp
-                            </button>
-                        </li>
-                        <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/evaluate-managers')}>
-                                Đánh giá quản lý
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/evaluate-supervisors')}>
+                                Đánh giá giám sát
                             </button>
                         </li>
                         <li className="nav-item mb-2">
@@ -78,10 +81,16 @@ export default function Sidebar() {
                                 Quản lý form đánh giá
                             </button>
                         </li>
+                        <li className="nav-item mb-2">
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/criteria-management')}>
+                                Quản lý tiêu chí đánh giá
+                            </button>
+                        </li>
                     </>
                 )}
 
-                {role === 'hr' && (
+
+                {role === 'HR' && (
                     <>
                         <li className="nav-item mb-2">
                             <button className="btn btn-link text-white nav-link" onClick={() => navigate('/employee-management')}>
@@ -99,11 +108,20 @@ export default function Sidebar() {
                             </button>
                         </li>
                         <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/criteria-management')}>
-                                Quản lý tiêu chí đánh giá
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/account-management')}>
+                                Quản lý account
                             </button>
                         </li>
                     </>
+                )}
+
+                
+                {role === 'director' && (
+                    <li className="nav-item mb-2">
+                        <button className="btn btn-link text-white nav-link" onClick={() => navigate('/what-form-management')}>
+                            Quản lý what_form
+                        </button>
+                    </li>
                 )}
             </ul>
         </div>

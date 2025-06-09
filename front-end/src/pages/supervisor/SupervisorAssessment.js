@@ -16,7 +16,8 @@ function SupervisorEvaluateEmployee() {
     const [evaluationAnswerId, setEvaluationAnswerId] = useState(null);
     const [answerDetails, setAnswerDetails] = useState([]);
     const [employeeScores, setEmployeeScores] = useState({});
-    const [managerScores, setManagerScores] = useState({});
+    const [employeeComments, setEmployeeComments] = useState({});
+    const [comments, setComments] = useState({});
 
     useEffect(() => {
         if (questions.length > 0) {
@@ -28,6 +29,26 @@ function SupervisorEvaluateEmployee() {
                     }
                 });
                 return newScores;
+            });
+
+            setComments(prevComments => {
+                const newComments = { ...prevComments };
+                questions.forEach(q => {
+                    if (newComments[q.evaluation_question_id] === undefined) {
+                        newComments[q.evaluation_question_id] = '';
+                    }
+                });
+                return newComments;
+            });
+
+            setEmployeeComments(prevComments => {
+                const newComments = { ...prevComments };
+                questions.forEach(q => {
+                    if (newComments[q.evaluation_question_id] === undefined) {
+                        newComments[q.evaluation_question_id] = '';
+                    }
+                });
+                return newComments;
             });
         }
     }, [questions]);
@@ -89,6 +110,8 @@ function SupervisorEvaluateEmployee() {
             setCriterias([]);
             setQuestions([]);
             setScores({});
+            setComments({});
+            setEmployeeComments({});
             setEmployeeScores({});
         }
     };
@@ -107,17 +130,17 @@ function SupervisorEvaluateEmployee() {
             setAnswerDetails(details);
             console.log(details)
 
-            // Map điểm employee_score, manager_score theo evaluation_question_id
+            // Map điểm employee_score, employee theo evaluation_question_id
             const newEmployeeScores = {};
-            const newManagerScores = {};
+            const newEmployeeComments = {};
             details.forEach(detail => {
                 newEmployeeScores[detail.evaluation_question_id] = detail.employee_score;
-                newManagerScores[detail.evaluation_question_id] = detail.manager_score;
+                newEmployeeComments[detail.evaluation_question_id] = detail.employee_comment || '';
             });
             setEmployeeScores(newEmployeeScores);
-            setManagerScores(newManagerScores);
+            setEmployeeComments(newEmployeeComments);
             console.log(newEmployeeScores)
-            console.log('Manager scores:', newManagerScores);
+
         } catch (error) {
             console.error('Lỗi khi lấy EvaluationAnswer hoặc chi tiết:');
 
@@ -134,8 +157,9 @@ function SupervisorEvaluateEmployee() {
             setEvaluationAnswerId(null);
             setAnswerDetails([]);
             setEmployeeScores({});
-            setManagerScores({});
             setScores({});
+            setEmployeeComments({});
+            setComments({});
         }
     };
 
@@ -150,6 +174,8 @@ function SupervisorEvaluateEmployee() {
             setCriterias([]);
             setQuestions([]);
             setScores({});
+            setComments({});
+            setEmployeeComments({});
             setEmployeeScores({});
         }
     };
@@ -166,6 +192,13 @@ function SupervisorEvaluateEmployee() {
             console.log('Updated scores:', newScores);
             return newScores;
         });
+    };
+
+    const handleCommentChange = (questionId, value) => {
+        setComments(prevComments => ({
+            ...prevComments,
+            [questionId]: value
+        }));
     };
 
     const handleSubmit = async () => {
@@ -188,6 +221,7 @@ function SupervisorEvaluateEmployee() {
             const batchData = answerDetails.map((detail) => ({
                 evaluation_answer_detail_id: detail.evaluation_answer_detail_id,
                 supervisor_score: parseInt(scores[detail.evaluation_question_id] || 0, 10),
+                supervisor_comment: comments[detail.evaluation_question_id] || ''
             }))
 
             const detailRes = await axiosInstance.put('/evaluation-answer-details/supervisor/batch', {
@@ -235,9 +269,9 @@ function SupervisorEvaluateEmployee() {
                         <th style={{ width: '5%' }}>Điểm tối đa</th>
                         <th style={{ width: '7.5%' }}>Nhân viên</th>
                         <th style={{ width: '20%' }}>Nhận xét</th>
-                        <th style={{ width: '10%' }}>Giám sát</th>
-                        <th style={{ width: '22.5%' }}>Nhận xét</th>
-                        <th style={{ width: '5%' }}>Quản lý</th>
+                        <th style={{ width: '7.5%' }}>Giám sát</th>
+                        <th style={{ width: '20%' }}>Nhận xét</th>
+                        <th style={{ width: '10%' }}>Quản lý</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -264,6 +298,7 @@ function SupervisorEvaluateEmployee() {
                                                 value={employeeScores[q.evaluation_question_id] ?? 0}
                                             />
                                         </td>
+
                                         <td><input className="form-control" disabled value="" /></td>
                                         <td>
                                             <input
@@ -271,14 +306,13 @@ function SupervisorEvaluateEmployee() {
                                                 className="form-control"
                                                 min="0"
                                                 max={q.max_score}
-                                                value={scores[q.evaluation_question_id] ?? 0}
+                                                value={scores[q.evaluation_question_id] || 0}
                                                 onChange={(e) =>
                                                     handleScoreChange(q.evaluation_question_id, e.target.value, q.max_score)
                                                 }
                                                 disabled={role !== 'supervisor'}
-                                            />
-                                        </td>
-                                        <td><input className="form-control" value="" /></td>
+                                            /></td>
+                                        <td><input className="form-control" disabled value="" /></td>
                                         <td><input className="form-control" disabled value="" /></td>
                                     </tr>
                                 ))}
