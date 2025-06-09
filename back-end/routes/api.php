@@ -128,7 +128,7 @@ Route::prefix('evaluation-answers')->group(function () {
     Route::delete('/{id}', [EvaluationAnswerController::class, 'destroy']);
     Route::get('/{id}/details', [EvaluationAnswerController::class, 'showWithDetails']);
     Route::get('/employee/{code}', [EvaluationAnswerController::class, 'getByCode']);
-    Route::put('/{id}/update-manage-score', [EvaluationAnswerController::class, 'updateTotalScoreManage']);
+    Route::put('/{id}/update-manager-score', [EvaluationAnswerController::class, 'updateTotalScoreManage']);
     Route::put('/{id}/update-supervisor-score', [EvaluationAnswerController::class, 'updateTotalScoreSupervisor']);
     Route::get('/by-code-and-form-id/{code}/{formId}', [EvaluationAnswerController::class, 'getByCodeAndFormId']);
 });
@@ -147,8 +147,10 @@ Route::prefix('evaluation-answer-details')->group(function () {
     // Batch routes
     Route::post('/employee/batch', [EvaluationAnswerDetailController::class, 'storeByEmployeeBatch']);
     Route::put('/employee/comments/batch', [EvaluationAnswerDetailController::class, 'updateEmployeeCommentsBatch']);
+    Route::post('/supervisor/batch', [EvaluationAnswerDetailController::class, 'storeBySupervisorBatch']);
     Route::put('/supervisor/batch', [EvaluationAnswerDetailController::class, 'updateSupervisorScoresBatch']);
     Route::put('/supervisor/comments/batch', [EvaluationAnswerDetailController::class, 'updateSupervisorCommentsBatch']);
+    Route::post('/manager/batch', [EvaluationAnswerDetailController::class, 'storeByManagerBatch']);
     Route::put('/manager/batch', [EvaluationAnswerDetailController::class, 'updateManagerScoresBatch']);
     Route::put('/director/batch', [EvaluationAnswerDetailController::class, 'updateDirectorScoresBatch']);
 });
@@ -157,6 +159,8 @@ Route::get('employees/{code}/evaluation-cycles', [EmployeeController::class, 'ge
 Route::get('evaluation-cycles/{cycleId}/criteria-form', [CriteriaFormController::class, 'getFormByCycle']);
 Route::get('/employees/department/{departmentId}/employees-only', [EmployeeController::class, 'getEmployeesByDepartmentAndRole']);
 Route::get('/employees/department/{id}/managers', [EmployeeController::class, 'getManagersByDepartment']);
+Route::get('/employees/department/{id}/supervisor', [EmployeeController::class, 'getSupervisorsByDepartment']);
+
 
 Route::prefix('total-criteria-scores')->group(function () {
     Route::get('/', [TotalCriteriaScoreController::class, 'index']);

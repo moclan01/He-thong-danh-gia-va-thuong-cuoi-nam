@@ -137,6 +137,45 @@ class EvaluationAnswerDetailController extends Controller
         return response()->json($created, 201);
     }
 
+    public function storeBySupervisorBatch(Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.*.evaluation_question_id' => 'required|integer|exists:evaluation_questions,evaluation_question_id',
+            'data.*.evaluation_answer_id' => 'required|integer|exists:evaluation_answers,evaluation_answer_id',
+            'data.*.supervisor_score' => 'required|integer|min:0|max:120',
+            'data.*.supervisor_comment' => 'nullable|string|max:1000',
+        ]);
+
+        $created = [];
+
+        foreach ($validated['data'] as $item) {
+            $created[] = $this->evaluationAnswerDetailRepository->create($item);
+        }
+
+        return response()->json($created, 201);
+
+    }
+
+    public function storeByManagerBatch(Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.*.evaluation_question_id' => 'required|integer|exists:evaluation_questions,evaluation_question_id',
+            'data.*.evaluation_answer_id' => 'required|integer|exists:evaluation_answers,evaluation_answer_id',
+            'data.*.manager_score' => 'required|integer|min:0|max:120',
+        ]);
+
+        $created = [];
+
+        foreach ($validated['data'] as $item) {
+            $created[] = $this->evaluationAnswerDetailRepository->create($item);
+        }
+
+        return response()->json($created, 201);
+
+    }
+
     public function updateManagerScoresBatch(Request $request)
     {
         $validated = $request->validate([
@@ -161,6 +200,7 @@ class EvaluationAnswerDetailController extends Controller
             'data' => 'required|array',
             'data.*.evaluation_answer_detail_id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
             'data.*.supervisor_score' => 'required|integer|min:0|max:120',
+            'data.*.supervisor_comment' => 'nullable|string|max:1000',
         ]);
 
         $updated = [];
@@ -168,6 +208,7 @@ class EvaluationAnswerDetailController extends Controller
         foreach ($validated['data'] as $item) {
             $updated[] = $this->evaluationAnswerDetailRepository->update($item['evaluation_answer_detail_id'], [
                 'supervisor_score' => $item['supervisor_score'],
+                'supervisor_comment' => $item['supervisor_comment'],
             ]);
         }
 

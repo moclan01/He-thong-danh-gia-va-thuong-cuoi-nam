@@ -9,7 +9,7 @@ class EvaluationAnswerRepository implements IEvaluationAnswerRepository
 {
     public function getAll()
     {
-        return EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])->get();
+        return EvaluationAnswer::with(['employee', 'criteriaForm'])->get();
 
     }
 
@@ -28,7 +28,7 @@ class EvaluationAnswerRepository implements IEvaluationAnswerRepository
         $answer = EvaluationAnswer::find($id);
         if ($answer) {
             $answer->update($data);
-            return EvaluationAnswer::with(['employee', 'criteriaForm', 'evaluationAnswerDetails'])->find($id);
+            return EvaluationAnswer::with(['employee', 'criteriaForm'])->find($id);
         }
         return null;
     }

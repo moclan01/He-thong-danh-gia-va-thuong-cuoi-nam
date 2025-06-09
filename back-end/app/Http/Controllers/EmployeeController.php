@@ -207,4 +207,15 @@ class EmployeeController extends Controller
 
         return response()->json($employees);
     }
+
+    public function getSupervisorsByDepartment($departmentId)
+    {
+        $employees = Employee::where('department_id', $departmentId)
+            ->whereHas('account', function ($query) {
+                $query->where('role', 'supervisor');
+            })
+            ->get();
+
+        return response()->json($employees);
+    }
 }
