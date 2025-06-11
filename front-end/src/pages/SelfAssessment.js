@@ -94,10 +94,64 @@ function EmployeeSelfEvaluation() {
       }
 
       setQuestions(allQuestions);
+
+      if (form.criteria_form_id && profile.code) {
+        try {
+          // Lấy evaluation-answer dựa trên code và criteria_form_id
+          const answerRes = await axiosInstance.get(`/evaluation-answers/code/${profile.code}/form/${form.criteria_form_id}`);
+          const evaluationAnswerId = answerRes.data.evaluation_answer_id;
+
+          // Lấy chi tiết đánh giá từ API /evaluation-answers/{evaluationAnswerId}/details
+          const detailsRes = await axiosInstance.get(`/evaluation-answers/${evaluationAnswerId}/details`);
+          // SỬA ĐỔI: Sử dụng evaluation_answer_details thay vì evaluationAnswerDetails
+          const details = detailsRes.data.evaluation_answer_details || [];
+          const existingDetailMap = details.reduce((map, detail) => {
+            map[detail.evaluation_question_id] = detail.evaluation_answer_detail_id;
+            return map;
+          }, {});
+          console.log('details', details)
+          console.log('existingDetailMap', existingDetailMap)
+          // Cập nhật scores và comments từ dữ liệu đã lưu
+          const updatedScores = { ...scores };
+          const updatedComments = { ...comments };
+
+          details.forEach(detail => {
+            updatedScores[detail.evaluation_question_id] = {
+              ...updatedScores[detail.evaluation_question_id],
+              // SỬA ĐỔI: Sử dụng employee_score, supervisor_score, manager_score từ JSON
+              employee: detail.employee_score || 0,
+              supervisor: detail.supervisor_score || 0,
+              manager: detail.manager_score || 0
+            };
+
+            updatedComments[detail.evaluation_question_id] = {
+              ...updatedComments[detail.evaluation_question_id],
+              // SỬA ĐỔI: Sử dụng employee_comment, supervisor_comment từ JSON
+              employee: detail.employee_comment || '',
+              supervisor: detail.supervisor_comment || '',
+              manager: detail.manager_comment || ''
+            };
+          });
+
+          setScores(updatedScores);
+          setComments(updatedComments);
+
+
+
+        } catch (err) {
+          if (err.response?.status !== 404) {
+            console.error('Lỗi khi lấy chi tiết đánh giá:', err);
+          }
+          // Nếu không có dữ liệu (404), state scores và comments sẽ giữ giá trị mặc định (0 và '')
+        }
+      }
+
     } catch (err) {
       console.error('Lỗi khi lấy form/tiêu chí/câu hỏi:', err);
       setCriterias([]);
       setQuestions([]);
+      setScores({});
+      setComments({});
     }
   };
 
@@ -157,44 +211,109 @@ function EmployeeSelfEvaluation() {
         return sum + Number(score);
       }, 0);
 
-      const answerRes = await axiosInstance.post('/evaluation-answers', {
-        code: profile.code,
-        criteria_form_id: criteriaForm.criteria_form_id,
-        total_score: totalScore
+      let evaluationAnswerId;
+      let isExisting = false;
+
+      try {
+        const checkRes = await axiosInstance.get(`/evaluation-answers/code/${profile.code}/form/${criteriaForm.criteria_form_id}`);
+        evaluationAnswerId = checkRes.data.evaluation_answer_id;
+        isExisting = true;
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          throw err;
+        }
+      }
+
+      if (isExisting) {
+        await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}`, {
+          total_score: totalScore
+        });
+      } else {
+        const answerRes = await axiosInstance.post('/evaluation-answers', {
+          code: profile.code,
+          criteria_form_id: criteriaForm.criteria_form_id,
+          total_score: totalScore
+        });
+        evaluationAnswerId = answerRes.data.evaluation_answer_id;
+      }
+
+      const existingDetailsRes = await axiosInstance.get(`/evaluation-answers/${evaluationAnswerId}/details`);
+      const existingDetails = existingDetailsRes.data.evaluation_answer_details || [];
+      console.log('existingDetails:', existingDetails);
+      console.log('questions:', questions);
+      const existingDetailMap = existingDetails.reduce((map, detail) => {
+        map[detail.evaluation_question_id] = detail.evaluation_answer_detail_id;
+        return map;
+      }, {});
+
+      console.log('existingDetailMap:', existingDetails)
+      const createBatchData = [];
+      const updateBatchData = [];
+
+      questions.forEach((q) => {
+        console.log(`Checking questionId: ${q.evaluation_question_id}, exists: ${existingDetailMap[q.evaluation_question_id] !== undefined}, detailId: ${existingDetailMap[q.evaluation_question_id]}`);
+        const detail = {
+          evaluation_question_id: q.evaluation_question_id,
+          evaluation_answer_id: evaluationAnswerId,
+          employee_score: parseInt(scores[q.evaluation_question_id]?.employee || 0, 10),
+          employee_comment: comments[q.evaluation_question_id]?.employee || ''
+        };
+
+        if (existingDetailMap[q.evaluation_question_id] !== undefined) {
+          updateBatchData.push({
+            evaluation_answer_detail_id: existingDetailMap[q.evaluation_question_id],
+            employee_score: detail.employee_score,
+            employee_comment: detail.employee_comment
+          });
+        } else {
+          createBatchData.push(detail);
+        }
       });
+      console.log('createBatchData:', createBatchData);
+      console.log('updateBatchData:', updateBatchData);
+      if (createBatchData.length > 0) {
+        await axiosInstance.post('/evaluation-answer-details/employee/batch', {
+          data: createBatchData
+        });
 
-      const evaluationAnswerId = answerRes.data.evaluation_answer_id;
+      }
 
-      const batchScoreData = questions.map((q) => ({
-        evaluation_question_id: q.evaluation_question_id,
-        evaluation_answer_id: evaluationAnswerId,
-        employee_score: parseInt(scores[q.evaluation_question_id]?.employee || 0, 10)
-      }));
-
-      const detailRes = await axiosInstance.post('/evaluation-answer-details/employee/batch', {
-        data: batchScoreData
-      });
-
-      const batchCommentData = detailRes.data.map((item, index) => ({
-        evaluation_answer_detail_id: item.evaluation_answer_detail_id,
-        employee_comment: comments[questions[index].evaluation_question_id]?.employee || ''
-      }));
-
-      await axiosInstance.patch('/evaluation-answer-details/employee/batch', {
-        data: batchCommentData
-      });
+      if (updateBatchData.length > 0) {
+        await axiosInstance.put('/evaluation-answer-details/employee/scores/batch', {
+          data: updateBatchData.map(item => ({
+            evaluation_answer_detail_id: item.evaluation_answer_detail_id,
+            employee_score: item.employee_score
+          }))
+        });
+        await axiosInstance.put('/evaluation-answer-details/employee/comments/batch', {
+          data: updateBatchData.map(item => ({
+            evaluation_answer_detail_id: item.evaluation_answer_detail_id,
+            employee_comment: item.employee_comment
+          }))
+        });
+      }
 
       alert('Lưu đánh giá nhân viên thành công!');
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } catch (error) {
-      if (error.response && error.response.status === 422) {
-        console.error('Lỗi xác thực:', error.response.data.errors);
-        alert('Dữ liệu không hợp lệ: ' + JSON.stringify(error.response.data.errors));
+      // Ghi log lỗi chi tiết
+      console.error('Lỗi trong handleEmployeeSubmit:', error);
+      if (error.response) {
+        console.error('Dữ liệu phản hồi:', error.response.data);
+        console.error('Trạng thái phản hồi:', error.response.status);
+        if (error.response.status === 422) {
+          alert('Dữ liệu không hợp lệ: ' + JSON.stringify(error.response.data.errors));
+        } else {
+          alert('Có lỗi xảy ra khi lưu đánh giá: ' + (error.response.data.message || 'Lỗi không xác định'));
+        }
+      } else if (error.request) {
+        console.error('Không nhận được phản hồi:', error.request);
+        alert('Không nhận được phản hồi từ server. Vui lòng kiểm tra kết nối mạng.');
       } else {
-        console.error('Lỗi khi lưu đánh giá:', error);
-        alert('Có lỗi xảy ra khi lưu đánh giá!');
+        console.error('Thông báo lỗi:', error.message);
+        alert('Lỗi: ' + error.message);
       }
     }
   };
@@ -221,13 +340,15 @@ function EmployeeSelfEvaluation() {
       }, 0);
 
       // Giả định endpoint tương tự, cần xác nhận với backend
-      const answerRes = await axiosInstance.post('/evaluation-answers', {
+      const answerRes = await axiosInstance.post('/evaluation-answers/supervisor', {
         code: profile.code,
         criteria_form_id: criteriaForm.criteria_form_id,
-        total_score: totalScore
+        total_score_supervisor: totalScore
       });
 
       const evaluationAnswerId = answerRes.data.evaluation_answer_id;
+      console.log('supervisor id', evaluationAnswerId)
+      console.log('answerRes.data', answerRes.data)
 
       const batchScoreData = questions.map((q) => ({
         evaluation_question_id: q.evaluation_question_id,
@@ -286,10 +407,10 @@ function EmployeeSelfEvaluation() {
       }, 0);
 
       // Giả định endpoint tương tự, cần xác nhận với backend
-      const answerRes = await axiosInstance.post('/evaluation-answers', {
+      const answerRes = await axiosInstance.post('/evaluation-answers/manager', {
         code: profile.code,
         criteria_form_id: criteriaForm.criteria_form_id,
-        total_score: totalScore
+        total_score_manage: totalScore
       });
 
       const evaluationAnswerId = answerRes.data.evaluation_answer_id;

@@ -236,7 +236,7 @@ function ManagerEvaluateEmployee() {
     return (
         <MainLayout>
             <div>
-                <h1>Đánh giá nhân viên có mã: {code}</h1>
+                <h1>Đánh giá giám sát có mã: {code}</h1>
             </div>
             <div className="mb-3">
                 <label>Chọn chu kỳ đánh giá:</label>
@@ -258,12 +258,10 @@ function ManagerEvaluateEmployee() {
                 <thead className="thead-dark">
                     <tr>
                         <th style={{ width: '30%' }}>Nội dung</th>
-                        <th style={{ width: '5%' }}>Điểm tối đa</th>
-                        <th style={{ width: '7.5%' }}>Nhân viên</th>
-                        <th style={{ width: '20%' }}>Nhận xét</th>
-                        <th style={{ width: '7.5%' }}>Giám sát</th>
-                        <th style={{ width: '20%' }}>Nhận xét</th>
-                        <th style={{ width: '10%' }}>Quản lý</th>
+                        <th style={{ width: '10%' }}>Điểm tối đa</th>
+                        <th style={{ width: '15%' }}>Giám sát</th>
+                        <th style={{ width: '30%' }}>Nhận xét</th>
+                        <th style={{ width: '15%' }}>Quản lý</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -275,7 +273,7 @@ function ManagerEvaluateEmployee() {
                         return (
                             <React.Fragment key={criteria.evaluation_criteria_id}>
                                 <tr className="table-secondary">
-                                    <td colSpan="7">
+                                    <td colSpan="5">
                                         <strong>Tiêu chí: {criteria.criteria_name}</strong>
                                     </td>
                                 </tr>
@@ -287,28 +285,14 @@ function ManagerEvaluateEmployee() {
                                             <input
                                                 className="form-control"
                                                 disabled
-                                                value={employeeScores[q.evaluation_question_id] || 0}
+                                                value={0} 
                                             />
                                         </td>
                                         <td>
                                             <input
                                                 className="form-control"
                                                 disabled
-                                                value="" // TBD: Nhận xét nhân viên
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                className="form-control"
-                                                disabled
-                                                value={0} // TBD: Điểm giám sát
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                className="form-control"
-                                                disabled
-                                                value="" // TBD: Nhận xét giám sát
+                                                value="" 
                                             />
                                         </td>
                                         <td>
