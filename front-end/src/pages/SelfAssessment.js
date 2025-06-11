@@ -339,36 +339,95 @@ function EmployeeSelfEvaluation() {
         return sum + Number(score);
       }, 0);
 
-      // Giả định endpoint tương tự, cần xác nhận với backend
-      const answerRes = await axiosInstance.post('/evaluation-answers/supervisor', {
-        code: profile.code,
-        criteria_form_id: criteriaForm.criteria_form_id,
-        total_score_supervisor: totalScore
+      let evaluationAnswerId;
+      let isExisting = false;
+
+      // Kiểm tra xem đã có bản ghi đánh giá cho supervisor chưa
+      try {
+        const checkRes = await axiosInstance.get(`/evaluation-answers/code/${profile.code}/form/${criteriaForm.criteria_form_id}`);
+        evaluationAnswerId = checkRes.data.evaluation_answer_id;
+        isExisting = true;
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          throw err;
+        }
+      }
+
+      // Cập nhật hoặc tạo mới bản ghi đánh giá
+      if (isExisting) {
+        await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}`, {
+          total_score_supervisor: totalScore
+        });
+      } else {
+        const answerRes = await axiosInstance.post('/evaluation-answers/supervisor', {
+          code: profile.code,
+          criteria_form_id: criteriaForm.criteria_form_id,
+          total_score_supervisor: totalScore
+        });
+        evaluationAnswerId = answerRes.data.evaluation_answer_id;
+      }
+
+      // Lấy chi tiết đánh giá hiện có
+      const existingDetailsRes = await axiosInstance.get(`/evaluation-answers/${evaluationAnswerId}/details`);
+      const existingDetails = existingDetailsRes.data.evaluation_answer_details || [];
+      console.log('supervisor existingDetails:', existingDetails);
+      console.log('supervisor questions:', questions);
+
+      const existingDetailMap = existingDetails.reduce((map, detail) => {
+        map[detail.evaluation_question_id] = detail.evaluation_answer_detail_id;
+        return map;
+      }, {});
+
+      console.log('supervisor existingDetailMap:', existingDetailMap);
+
+      const createBatchData = [];
+      const updateBatchData = [];
+
+      questions.forEach((q) => {
+        console.log(`Checking supervisor questionId: ${q.evaluation_question_id}, exists: ${existingDetailMap[q.evaluation_question_id] !== undefined}, detailId: ${existingDetailMap[q.evaluation_question_id]}`);
+        const detail = {
+          evaluation_question_id: q.evaluation_question_id,
+          evaluation_answer_id: evaluationAnswerId,
+          supervisor_score: parseInt(scores[q.evaluation_question_id]?.supervisor || 0, 10),
+          supervisor_comment: comments[q.evaluation_question_id]?.supervisor || ''
+        };
+
+        if (existingDetailMap[q.evaluation_question_id] !== undefined) {
+          updateBatchData.push({
+            evaluation_answer_detail_id: existingDetailMap[q.evaluation_question_id],
+            supervisor_score: detail.supervisor_score,
+            supervisor_comment: detail.supervisor_comment
+          });
+        } else {
+          createBatchData.push(detail);
+        }
       });
 
-      const evaluationAnswerId = answerRes.data.evaluation_answer_id;
-      console.log('supervisor id', evaluationAnswerId)
-      console.log('answerRes.data', answerRes.data)
+      console.log('supervisor createBatchData:', createBatchData);
+      console.log('supervisor updateBatchData:', updateBatchData);
 
-      const batchScoreData = questions.map((q) => ({
-        evaluation_question_id: q.evaluation_question_id,
-        evaluation_answer_id: evaluationAnswerId,
-        supervisor_score: parseInt(scores[q.evaluation_question_id]?.supervisor || 0, 10),
-        supervisor_comment: comments[q.evaluation_question_id]?.supervisor || ''
-      }));
+      if (createBatchData.length > 0) {
+        console.log('Creating new supervisor details:', createBatchData);
+        await axiosInstance.post('/evaluation-answer-details/supervisor/batch', {
+          data: createBatchData
+        });
+      }
 
-      const detailRes = await axiosInstance.post('/evaluation-answer-details/supervisor/batch', {
-        data: batchScoreData
-      });
-
-      const batchCommentData = detailRes.data.map((item, index) => ({
-        evaluation_answer_detail_id: item.evaluation_answer_detail_id,
-        supervisor_comment: comments[questions[index].evaluation_question_id]?.supervisor || ''
-      }));
-
-      await axiosInstance.patch('/evaluation-answer-details/supervisor/batch', {
-        data: batchCommentData
-      });
+      if (updateBatchData.length > 0) {
+        console.log('Updating existing supervisor details:', updateBatchData);
+        await axiosInstance.put('/evaluation-answer-details/supervisor/scores/batch', {
+          data: updateBatchData.map(item => ({
+            evaluation_answer_detail_id: item.evaluation_answer_detail_id,
+            supervisor_score: item.supervisor_score
+          }))
+        });
+        await axiosInstance.put('/evaluation-answer-details/supervisor/comments/batch', {
+          data: updateBatchData.map(item => ({
+            evaluation_answer_detail_id: item.evaluation_answer_detail_id,
+            supervisor_comment: item.supervisor_comment
+          }))
+        });
+      }
 
       alert('Lưu đánh giá giám sát thành công!');
       setTimeout(() => {
@@ -406,24 +465,87 @@ function EmployeeSelfEvaluation() {
         return sum + Number(score);
       }, 0);
 
-      // Giả định endpoint tương tự, cần xác nhận với backend
-      const answerRes = await axiosInstance.post('/evaluation-answers/manager', {
-        code: profile.code,
-        criteria_form_id: criteriaForm.criteria_form_id,
-        total_score_manage: totalScore
+      let evaluationAnswerId;
+      let isExisting = false;
+
+      // Kiểm tra xem đã có bản ghi đánh giá cho manager chưa
+      try {
+        const checkRes = await axiosInstance.get(`/evaluation-answers/code/${profile.code}/form/${criteriaForm.criteria_form_id}`);
+        evaluationAnswerId = checkRes.data.evaluation_answer_id;
+        isExisting = true;
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          throw err;
+        }
+      }
+
+      // Cập nhật hoặc tạo mới bản ghi đánh giá
+      if (isExisting) {
+        await axiosInstance.put(`/evaluation-answers/${evaluationAnswerId}`, {
+          total_score_manage: totalScore
+        });
+      } else {
+        const answerRes = await axiosInstance.post('/evaluation-answers/manager', {
+          code: profile.code,
+          criteria_form_id: criteriaForm.criteria_form_id,
+          total_score_manage: totalScore
+        });
+        evaluationAnswerId = answerRes.data.evaluation_answer_id;
+      }
+
+      // Lấy chi tiết đánh giá hiện có
+      const existingDetailsRes = await axiosInstance.get(`/evaluation-answers/${evaluationAnswerId}/details`);
+      const existingDetails = existingDetailsRes.data.evaluation_answer_details || [];
+      console.log('manager existingDetails:', existingDetails);
+      console.log('manager questions:', questions);
+
+      const existingDetailMap = existingDetails.reduce((map, detail) => {
+        map[detail.evaluation_question_id] = detail.evaluation_answer_detail_id;
+        return map;
+      }, {});
+
+      console.log('manager existingDetailMap:', existingDetailMap);
+
+      const createBatchData = [];
+      const updateBatchData = [];
+
+      questions.forEach((q) => {
+        console.log(`Checking manager questionId: ${q.evaluation_question_id}, exists: ${existingDetailMap[q.evaluation_question_id] !== undefined}, detailId: ${existingDetailMap[q.evaluation_question_id]}`);
+        const detail = {
+          evaluation_question_id: q.evaluation_question_id,
+          evaluation_answer_id: evaluationAnswerId,
+          manager_score: parseInt(scores[q.evaluation_question_id]?.manager || 0, 10),
+        };
+
+        if (existingDetailMap[q.evaluation_question_id] !== undefined) {
+          updateBatchData.push({
+            evaluation_answer_detail_id: existingDetailMap[q.evaluation_question_id],
+            manager_score: detail.manager_score,
+          });
+        } else {
+          createBatchData.push(detail);
+        }
       });
 
-      const evaluationAnswerId = answerRes.data.evaluation_answer_id;
+      console.log('manager createBatchData:', createBatchData);
+      console.log('manager updateBatchData:', updateBatchData);
 
-      const batchScoreData = questions.map((q) => ({
-        evaluation_question_id: q.evaluation_question_id,
-        evaluation_answer_id: evaluationAnswerId,
-        manager_score: parseInt(scores[q.evaluation_question_id]?.manager || 0, 10)
-      }));
+      if (createBatchData.length > 0) {
+        console.log('Creating new manager details:', createBatchData);
+        await axiosInstance.post('/evaluation-answer-details/manager/batch', {
+          data: createBatchData
+        });
+      }
 
-      await axiosInstance.post('/evaluation-answer-details/manager/batch', {
-        data: batchScoreData
-      });
+      if (updateBatchData.length > 0) {
+        console.log('Updating existing manager details:', updateBatchData);
+        await axiosInstance.put('/evaluation-answer-details/manager/scores/batch', {
+          data: updateBatchData.map(item => ({
+            evaluation_answer_detail_id: item.evaluation_answer_detail_id,
+            manager_score: item.manager_score
+          }))
+        });
+      }
 
       alert('Lưu đánh giá quản lý thành công!');
       setTimeout(() => {
