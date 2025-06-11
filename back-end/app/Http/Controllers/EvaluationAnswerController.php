@@ -158,7 +158,6 @@ class EvaluationAnswerController extends Controller
             'code' => $validated['code'],
             'criteria_form_id' => $validated['criteria_form_id'],
             'total_score_supervisor' => $validated['total_score_supervisor'],
-            'total_score' => 0, 
         ];
 
         $evaluationAnswer = $this->evaluationAnswerRepository->create($data);
@@ -179,7 +178,6 @@ class EvaluationAnswerController extends Controller
             'code' => $validated['code'],
             'criteria_form_id' => $validated['criteria_form_id'],
             'total_score_manage' => $validated['total_score_manage'],
-            'total_score' => 0, // Default value for total_score
         ];
 
         $evaluationAnswer = $this->evaluationAnswerRepository->create($data);

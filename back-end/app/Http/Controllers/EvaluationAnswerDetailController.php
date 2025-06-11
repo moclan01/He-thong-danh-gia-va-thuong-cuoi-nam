@@ -201,7 +201,6 @@ class EvaluationAnswerDetailController extends Controller
             'data' => 'required|array',
             'data.*.evaluation_answer_detail_id' => 'required|integer|exists:evaluation_answer_details,evaluation_answer_detail_id',
             'data.*.supervisor_score' => 'required|integer|min:0|max:120',
-            'data.*.supervisor_comment' => 'nullable|string|max:1000',
         ]);
 
         $updated = [];
