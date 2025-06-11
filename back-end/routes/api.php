@@ -126,11 +126,13 @@ Route::prefix('evaluation-answers')->group(function () {
     Route::post('/', [EvaluationAnswerController::class, 'store']);
     Route::put('/{id}', [EvaluationAnswerController::class, 'update']);
     Route::delete('/{id}', [EvaluationAnswerController::class, 'destroy']);
+    Route::post('/supervisor', [EvaluationAnswerController::class, 'storeWithSupervisor']);
+    Route::post('/manager', [EvaluationAnswerController::class, 'storeWithManager']);
     Route::get('/{id}/details', [EvaluationAnswerController::class, 'showWithDetails']);
     Route::get('/employee/{code}', [EvaluationAnswerController::class, 'getByCode']);
     Route::put('/{id}/update-manager-score', [EvaluationAnswerController::class, 'updateTotalScoreManage']);
     Route::put('/{id}/update-supervisor-score', [EvaluationAnswerController::class, 'updateTotalScoreSupervisor']);
-    Route::get('/by-code-and-form-id/{code}/{formId}', [EvaluationAnswerController::class, 'getByCodeAndFormId']);
+    Route::get('code/{code}/form/{formId}', [EvaluationAnswerController::class, 'getByCodeAndFormId']);
 });
 
 Route::prefix('evaluation-answer-details')->group(function () {
@@ -146,6 +148,7 @@ Route::prefix('evaluation-answer-details')->group(function () {
 
     // Batch routes
     Route::post('/employee/batch', [EvaluationAnswerDetailController::class, 'storeByEmployeeBatch']);
+    Route::put('/employee/scores/batch', [EvaluationAnswerDetailController::class, 'updateEmployeeScoresBatch']);
     Route::put('/employee/comments/batch', [EvaluationAnswerDetailController::class, 'updateEmployeeCommentsBatch']);
     Route::post('/supervisor/batch', [EvaluationAnswerDetailController::class, 'storeBySupervisorBatch']);
     Route::put('/supervisor/batch', [EvaluationAnswerDetailController::class, 'updateSupervisorScoresBatch']);

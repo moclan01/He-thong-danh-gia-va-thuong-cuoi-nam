@@ -126,6 +126,7 @@ class EvaluationAnswerDetailController extends Controller
             'data.*.evaluation_question_id' => 'required|integer|exists:evaluation_questions,evaluation_question_id',
             'data.*.evaluation_answer_id' => 'required|integer|exists:evaluation_answers,evaluation_answer_id',
             'data.*.employee_score' => 'required|integer|min:0|max:120',
+            'data.*.employee_comment' => 'nullable|string|max:1000',
         ]);
 
         $created = [];

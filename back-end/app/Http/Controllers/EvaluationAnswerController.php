@@ -48,18 +48,19 @@ class EvaluationAnswerController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'code' => 'sometimes|string|exists:employees,code',
-            'criteria_form_id' => 'sometimes|integer|exists:criteria_forms,criteria_form_id',
             'total_score' => 'required|integer|min:0',
         ]);
 
-        $evaluationAnswer = $this->evaluationAnswerRepository->update($id, $validated);
+        $evaluationAnswer = $this->evaluationAnswerRepository->getById($id);
 
         if (!$evaluationAnswer) {
             return response()->json(['message' => 'Evaluation Answer not found'], 404);
         }
 
-        return response()->json($evaluationAnswer);
+        $evaluationAnswer->total_score = $validated['total_score'];
+        $evaluationAnswer->save();
+
+        return response()->json($evaluationAnswer, 200);
     }
 
     public function destroy($id)
@@ -143,5 +144,46 @@ class EvaluationAnswerController extends Controller
         }
 
         return response()->json($evaluationAnswer);
+    }
+
+    public function storeWithSupervisor(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|exists:employees,code',
+            'criteria_form_id' => 'required|integer|exists:criteria_forms,criteria_form_id',
+            'total_score_supervisor' => 'required|integer|min:0',
+        ]);
+
+        $data = [
+            'code' => $validated['code'],
+            'criteria_form_id' => $validated['criteria_form_id'],
+            'total_score_supervisor' => $validated['total_score_supervisor'],
+            'total_score' => 0, 
+        ];
+
+        $evaluationAnswer = $this->evaluationAnswerRepository->create($data);
+
+        return response()->json(['message' => 'Evaluation Answer created successfully with supervisor score', 'data' => $evaluationAnswer], 201);
+    }
+    
+    
+    public function storeWithManager(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|exists:employees,code',
+            'criteria_form_id' => 'required|integer|exists:criteria_forms,criteria_form_id',
+            'total_score_manage' => 'required|integer|min:0',
+        ]);
+
+        $data = [
+            'code' => $validated['code'],
+            'criteria_form_id' => $validated['criteria_form_id'],
+            'total_score_manage' => $validated['total_score_manage'],
+            'total_score' => 0, // Default value for total_score
+        ];
+
+        $evaluationAnswer = $this->evaluationAnswerRepository->create($data);
+
+        return response()->json(['message' => 'Evaluation Answer created successfully with manager score', 'data' => $evaluationAnswer], 201);
     }
 }
