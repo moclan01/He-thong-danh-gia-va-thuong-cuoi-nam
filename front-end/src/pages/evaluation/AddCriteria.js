@@ -57,7 +57,7 @@ function AddCriteria() {
           <button
             className="btn btn-secondary me-2"
             type="button"
-            onClick={() => navigate('/criteria')}
+            onClick={() => navigate('/criteria-management')}
           >
             Hủy
           </button>

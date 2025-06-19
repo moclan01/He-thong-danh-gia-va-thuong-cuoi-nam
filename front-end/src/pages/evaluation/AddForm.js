@@ -28,7 +28,8 @@ function AddForm() {
 
     const fetchCriterias = async () => {
         const res = await axiosInstance.get('/evaluation-criterias');
-        setCriterias(res.data);
+        const filteredCriterias = res.data.filter(c => c.criteria_form_id === null);
+        setCriterias(filteredCriterias);
     };
 
     const handleInputChange = (e) => {

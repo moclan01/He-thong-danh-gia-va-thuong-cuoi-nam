@@ -82,7 +82,7 @@ function CriteriaFormDetail() {
           <div>Đang tải dữ liệu...</div>
         )}
 
-        <button className="btn btn-primary mt-3" onClick={() => navigate('/criteria-forms')}>
+        <button className="btn btn-primary mt-3" onClick={() => navigate('/form-management')}>
           Quay lại
         </button>
       </div>

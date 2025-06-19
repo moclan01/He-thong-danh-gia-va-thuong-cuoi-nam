@@ -32,6 +32,8 @@ import UpdatePlant from '../pages/hr/plant/UpdatePlant';
 import AddDepartment from '../pages/hr/department/AddDepartment';
 import UpdateDepartment from '../pages/hr/department/UpdateDepartment';
 import SupervisorsEvaluationManagement from '../pages/manager/SupervisorEvaluationManage';
+import WhatFormManage from '../pages/director/WhatFormManage';
+import UpdateForm from '../pages/evaluation/UpdateForm';
 
 
 export default function AppRoute() {
@@ -55,6 +57,7 @@ export default function AppRoute() {
         <Route path='/cycle/update/:id' element={<UpdateCycle />} />
         <Route path='/form-management' element={<CriteriaFormManage />} />
         <Route path='/form/add' element={<AddForm />} />
+        <Route path='/criteria-form/update/:id' element={<UpdateForm />} />
         <Route path='/form-management/detail/:formId' element={<CriteriaFormDetail />} />
         <Route path='/self-assessment' element={<EmployeeSelfEvaluation />} />
         <Route path='/evaluation-history' element={<EvaluationHistory />} />
@@ -71,7 +74,7 @@ export default function AppRoute() {
         <Route path="/plant/add" element={<AddPlant />} />
         <Route path="/plant/update/:id" element={<UpdatePlant />} />
         <Route path="/evaluate-supervisors" element={<SupervisorsEvaluationManagement />} />
-
+        <Route path="/what-form-management" element={<WhatFormManage />} />
         {/* Thêm các route khác ở đây */}
       </Routes>
     </Router>

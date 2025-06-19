@@ -71,27 +71,14 @@ export default function Sidebar() {
                                 Đánh giá giám sát
                             </button>
                         </li>
-                        <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/cycle-management')}>
-                                Quản lý chu kỳ đánh giá
-                            </button>
-                        </li>
-                        <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/form-management')}>
-                                Quản lý form đánh giá
-                            </button>
-                        </li>
-                        <li className="nav-item mb-2">
-                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/criteria-management')}>
-                                Quản lý tiêu chí đánh giá
-                            </button>
-                        </li>
+                
                     </>
                 )}
 
 
-                {role === 'HR' && (
+                {role === 'hr' && (
                     <>
+
                         <li className="nav-item mb-2">
                             <button className="btn btn-link text-white nav-link" onClick={() => navigate('/employee-management')}>
                                 Quản lý thông tin nhân viên
@@ -110,6 +97,21 @@ export default function Sidebar() {
                         <li className="nav-item mb-2">
                             <button className="btn btn-link text-white nav-link" onClick={() => navigate('/account-management')}>
                                 Quản lý account
+                            </button>
+                        </li>
+                        <li className="nav-item mb-2">
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/cycle-management')}>
+                                Quản lý chu kỳ đánh giá
+                            </button>
+                        </li>
+                        <li className="nav-item mb-2">
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/form-management')}>
+                                Quản lý form đánh giá
+                            </button>
+                        </li>
+                        <li className="nav-item mb-2">
+                            <button className="btn btn-link text-white nav-link" onClick={() => navigate('/criteria-management')}>
+                                Quản lý tiêu chí đánh giá
                             </button>
                         </li>
                     </>
